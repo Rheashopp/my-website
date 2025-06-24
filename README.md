@@ -7,9 +7,9 @@ sdk: static
 app_file: index.html
 pinned: false
 tags:
-  - deepsite
+  - SilentPattern
 ---
 
 # DEEPSITE
 
-Welcome to DEEPSITE — a futuristic Super General Intelligence Platform.
+Welcome to a futuristic Super Intelligence Platform.
