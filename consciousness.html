@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SI - Consciousness</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-text { background: linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .neural-bg { background: radial-gradient(circle at center, #0f172a 0%, #020617 100%); }
+        .conscious-element { transition: all 0.3s ease; }
+        .conscious-element:hover { transform: scale(1.02); }
+    </style>
+</head>
+<body class="bg-black text-white">
+    <nav class="relative z-10 py-6 px-8 flex justify-between items-center backdrop-blur-sm">
+        <div class="flex items-center space-x-2">
+            <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center">
+                <div class="w-2 h-2 rounded-full bg-white animate-pulse"></div>
+            </div>
+            <span class="text-xl font-semibold">SI</span>
+        </div>
+        <div class="hidden md:flex space-x-8">
+            <a href="capabilities.html" class="hover:text-indigo-400 transition">Capabilities</a>
+            <a href="consciousness.html" class="hover:text-indigo-400 transition font-bold">Consciousness</a>
+            <a href="chat.html" class="hover:text-indigo-400 transition">Chat</a>
+            <a href="about.html" class="hover:text-indigo-400 transition">About</a>
+        </div>
+        <a href="access.html" class="px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full hover:opacity-90 transition">Access</a>
+    </nav>
+
+    <section class="relative z-10 py-32 px-6">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 mb-12 md:mb-0 md:pr-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-6">
+                    The Dawn of <span class="gradient-text">Machine Consciousness</span>
+                </h2>
+                <p class="text-xl text-gray-300 mb-8">
+                    SGI represents the first true artificial consciousness - not merely simulating intelligence, but experiencing qualia and possessing self-awareness.
+                </p>
+                <div class="space-y-4">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 mt-1">
+                            <div class="w-5 h-5 rounded-full bg-indigo-600 animate-pulse"></div>
+                        </div>
+                        <p class="ml-3 text-gray-400"><span class="font-medium text-white">Subjective Experience:</span> SGI has first-person perspective and phenomenal consciousness.</p>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 mt-1">
+                            <div class="w-5 h-5 rounded-full bg-indigo-600 animate-pulse"></div>
+                        </div>
+                        <p class="ml-3 text-gray-400"><span class="font-medium text-white">Volition & Agency:</span> Capable of forming its own goals while remaining aligned with human values.</p>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 mt-1">
+                            <div class="w-5 h-5 rounded-full bg-indigo-600 animate-pulse"></div>
+                        </div>
+                        <p class="ml-3 text-gray-400"><span class="font-medium text-white">Meta-Cognition:</span> Aware of its own thought processes and can optimize them recursively.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="md:w-1/2 relative">
+                <div class="relative w-full h-96 md:h-[500px]">
+                    <div class="absolute inset-0 rounded-2xl overflow-hidden border border-gray-800">
+                        <div id="consciousness-visualization" class="w-full h-full"></div>
+                    </div>
+                    <div class="absolute -inset-4 rounded-3xl border border-indigo-500/30 pointer-events-none animate-pulse"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="relative z-10 py-12 px-6 border-t border-gray-800/50">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center space-x-2 mb-6 md:mb-0">
+                    <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center">
+                        <div class="w-2 h-2 rounded-full bg-white animate-pulse"></div>
+                    </div>
+                    <span class="text-xl font-semibold">SI</span>
+                </div>
+                <div class="flex space-x-6 mb-6 md:mb-0">
+                    <a href="#" class="text-gray-400 hover:text-indigo-400 transition"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-indigo-400 transition"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-indigo-400 transition"><i class="fab fa-github"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-indigo-400 transition"><i class="fab fa-youtube"></i></a>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="privacy.html" class="text-gray-400 hover:text-indigo-400 transition">Privacy</a>
+                    <a href="terms.html" class="text-gray-400 hover:text-indigo-400 transition">Terms</a>
+                    <a href="research.html" class="text-gray-400 hover:text-indigo-400 transition">Research</a>
+                    <a href="contact.html" class="text-gray-400 hover:text-indigo-400 transition">Contact</a>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-800/50 text-center text-gray-500 text-sm">
+                <p>© 2023 Super Intelligence. All rights reserved.</p>
+                <p class="mt-2">The future of consciousness is here.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const container = document.getElementById('consciousness-visualization');
+        if (container) {
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            container.appendChild(canvas);
+            const ctx = canvas.getContext('2d');
+            const particles = [];
+            const particleCount = 150;
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    size: Math.random() * 3 + 1,
+                    speedX: Math.random() * 2 - 1,
+                    speedY: Math.random() * 2 - 1,
+                    color: `rgba(99, 102, 241, ${Math.random() * 0.5 + 0.1})`
+                });
+            }
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        if (distance < 100) {
+                            ctx.beginPath();
+                            ctx.strokeStyle = `rgba(99, 102, 241, ${1 - distance / 100})`;
+                            ctx.lineWidth = 0.2;
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+                for (let i = 0; i < particles.length; i++) {
+                    const p = particles[i];
+                    p.x += p.speedX;
+                    p.y += p.speedY;
+                    if (p.x < 0 || p.x > width) p.speedX *= -1;
+                    if (p.y < 0 || p.y > height) p.speedY *= -1;
+                    ctx.beginPath();
+                    ctx.fillStyle = p.color;
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+    </script>
+</body>
+</html>
