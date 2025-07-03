@@ -26,3 +26,8 @@ p {
 .card p:last-child {
 	margin-bottom: 0;
 }
+.orb-glow-listening {
+  box-shadow: 0 0 60px 25px #a21caf88;
+  border-radius: 50%;
+  transition: box-shadow 0.25s;
+}
