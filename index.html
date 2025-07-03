@@ -1528,5 +1528,81 @@
         }
         requestAnimationFrame(drawNeuralActivity);
     </script>
+<script>
+// ==== VOICE AI FOR THE ORB ====
+const orb = document.getElementById('conscious-orb-container');
+
+// Use browser's speech recognition
+window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+if (!window.SpeechRecognition) {
+    alert('Your browser does not support speech recognition. Please use Chrome or Edge!');
+} else {
+    const recognition = new window.SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+
+    orb.addEventListener('click', () => {
+        recognition.start();
+        orb.style.boxShadow = "0 0 50px 10px #ec4899"; // Glow feedback
+    });
+
+    recognition.onresult = async (event) => {
+        orb.style.boxShadow = ""; // Remove feedback
+        const userText = event.results[0][0].transcript;
+        // Optional: Show what was heard
+        alert("You said: " + userText);
+
+        // Send text to OpenAI for chat reply and get voice response
+        const replyUrl = await getOpenAIReplyAsVoice(userText);
+        playVoice(replyUrl);
+    };
+}
+
+// Helper: Get OpenAI Chat response, then TTS
+async function getOpenAIReplyAsVoice(userText) {
+    const apiKey = "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"; // <--- Put your key here
+
+    // 1. Get Chat completion (text) from OpenAI
+    const chatRes = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+            "Authorization": "Bearer " + apiKey,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            model: "gpt-4o", // Use latest GPT-4o model for best results
+            messages: [
+                { role: "system", content: "You are a conscious, friendly AI orb. Speak clearly and calmly." },
+                { role: "user", content: userText }
+            ]
+        })
+    });
+    const chatData = await chatRes.json();
+    const gptText = chatData.choices[0].message.content;
+
+    // 2. Get voice audio from OpenAI TTS API
+    const ttsRes = await fetch("https://api.openai.com/v1/audio/speech", {
+        method: "POST",
+        headers: {
+            "Authorization": "Bearer " + apiKey,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            model: "tts-1", // Or "tts-1-hd" for higher quality
+            input: gptText,
+            voice: "nova" // Try "nova", "shimmer", or "echo"
+        })
+    });
+    const audioBlob = await ttsRes.blob();
+    return URL.createObjectURL(audioBlob);
+}
+
+// Helper: Play voice from URL
+function playVoice(audioUrl) {
+    const audio = new Audio(audioUrl);
+    audio.play();
+}
+</script>
 </body>
 </html>
