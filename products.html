@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Core metadata -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Silent — Products & Breakthroughs</title>
+  <meta name="description" content="Catalog of Silent inventions, prototypes, and to-be-published breakthroughs.">
+  <meta name="robots" content="index,follow">
+
+  <!-- Social sharing -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Silent — Products & Breakthroughs">
+  <meta property="og:description" content="Explore prototypes, preprints, and published breakthroughs from Silent.">
+  <meta property="og:image" content="/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Icons & fonts -->
+  <link rel="icon" href="/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font Awesome (icons) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    .gradient-text {
+      background: linear-gradient(90deg,#6366f1,#8b5cf6,#ec4899);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .neural-bg { background: radial-gradient(circle at center,#0f172a 0%,#020617 100%); }
+    .conscious-element { transition: transform .25s ease, box-shadow .25s ease; }
+    .conscious-element:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(79,70,229,.18); }
+    .tag { border: 1px solid rgba(99,102,241,.25); }
+    .kbd { border: 1px solid rgba(148,163,184,.2); border-bottom-width: 3px; }
+  </style>
+</head>
+
+<body class="bg-black text-white font-['Inter'] overflow-x-hidden">
+  <!-- Skip link -->
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 bg-indigo-600 text-white px-3 py-2 rounded-lg z-[100]">Skip to content</a>
+
+  <!-- NAVBAR (mirrors index, includes Products) -->
+  <nav class="relative z-10 py-6 px-8 flex justify-between items-center backdrop-blur-sm border-b border-gray-800/50">
+    <a href="index.html" class="flex items-center space-x-2 hover:opacity-80 transition" aria-label="Silent home">
+      <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center">
+        <div class="w-2 h-2 rounded-full bg-white animate-pulse"></div>
+      </div>
+      <span class="text-xl font-semibold">Silent</span>
+    </a>
+    <div class="hidden md:flex space-x-8">
+      <a href="capabilities.html" class="hover:text-indigo-400 transition">Capabilities</a>
+      <a href="consciousness.html" class="hover:text-indigo-400 transition">Consciousness</a>
+      <a href="chat.html" class="hover:text-indigo-400 transition">Chat</a>
+      <a href="products.html" class="hover:text-indigo-400 transition">Products</a>
+      <a href="about.html" class="hover:text-indigo-400 transition">About</a>
+    </div>
+    <a href="index.html#access" id="access-btn" class="px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full hover:opacity-90 transition">
+      Access
+    </a>
+  </nav>
+
+  <main id="main" class="relative z-10">
+    <!-- HERO -->
+    <section class="neural-bg py-20 px-6 text-center">
+      <div class="max-w-4xl mx-auto">
+        <h1 class="text-4xl md:text-6xl font-bold leading-tight">
+          <span class="gradient-text">Products & Breakthroughs</span>
+        </h1>
+        <p class="text-xl md:text-2xl text-gray-300 mt-6">
+          A living catalog of inventions, prototypes, and research artifacts — many pre-publication.
+        </p>
+        <p class="text-gray-400 mt-3 text-sm">
+          Tip: press <span class="kbd px-1.5 py-0.5 rounded">/</span> to focus search.
+        </p>
+      </div>
+    </section>
+
+    <!-- FILTERS -->
+    <section class="py-4 px-6">
+      <div class="max-w-6xl mx-auto">
+        <div class="bg-gray-900/50 border border-gray-800 rounded-2xl p-4 md:p-6">
+          <div class="flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
+            <div class="flex-1">
+              <label for="search" class="sr-only">Search</label>
+              <input id="search" type="search" placeholder="Search products, domains, or keywords"
+                     class="w-full bg-gray-800/60 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent"
+                     aria-label="Search products">
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <!-- Status -->
+              <select id="status" class="bg-gray-800/60 border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-600">
+                <option value="">Status: Any</option>
+                <option value="Idea">Idea</option>
+                <option value="Prototype">Prototype</option>
+                <option value="Preprint">Preprint</option>
+                <option value="Published">Published</option>
+              </select>
+              <!-- Domain -->
+              <select id="domain" class="bg-gray-800/60 border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-600">
+                <option value="">Domain: Any</option>
+                <option value="AI">AI</option>
+                <option value="Neuroscience">Neuroscience</option>
+                <option value="Systems">Systems</option>
+                <option value="Hardware">Hardware</option>
+                <option value="Biology">Biology</option>
+                <option value="Philosophy">Philosophy</option>
+              </select>
+            </div>
+          </div>
+          <div class="mt-3 text-xs text-gray-500">
+            Status legend:
+            <span class="inline-block px-2 py-0.5 rounded tag mr-1">Idea</span>
+            <span class="inline-block px-2 py-0.5 rounded tag mr-1">Prototype</span>
+            <span class="inline-block px-2 py-0.5 rounded tag mr-1">Preprint</span>
+            <span class="inline-block px-2 py-0.5 rounded tag">Published</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GRID -->
+    <section class="py-10 px-6">
+      <div class="max-w-6xl mx-auto">
+        <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        <div id="empty" class="hidden text-center text-gray-500 mt-12">
+          No items match your filters.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER (mirrors index) -->
+  <footer class="relative z-10 py-12 px-6 border-t border-gray-800/50">
+    <div class="max-w-6xl mx-auto">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="flex items-center space-x-2 mb-6 md:mb-0">
+          <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center">
+            <div class="w-2 h-2 rounded-full bg-white animate-pulse"></div>
+          </div>
+          <span class="text-xl font-semibold">SI</span>
+        </div>
+        <div class="flex space-x-6 mb-6 md:mb-0">
+          <a href="#" aria-label="Twitter"  class="text-gray-400 hover:text-indigo-400 transition"><i class="fab fa-twitter"></i></a>
+          <a href="#" aria-label="LinkedIn" class="text-gray-400 hover:text-indigo-400 transition"><i class="fab fa-linkedin"></i></a>
+          <a href="#" aria-label="GitHub"   class="text-gray-400 hover:text-indigo-400 transition"><i class="fab fa-github"></i></a>
+          <a href="#" aria-label="YouTube"  class="text-gray-400 hover:text-indigo-400 transition"><i class="fab fa-youtube"></i></a>
+        </div>
+        <div class="flex space-x-6">
+          <a href="privacy.html" class="text-gray-400 hover:text-indigo-400 transition">Privacy</a>
+          <a href="terms.html" class="text-gray-400 hover:text-indigo-400 transition">Terms</a>
+          <a href="research.html" class="text-gray-400 hover:text-indigo-400 transition">Research</a>
+          <a href="contact.html" class="text-gray-400 hover:text-indigo-400 transition">Contact</a>
+        </div>
+      </div>
+      <div class="mt-8 pt-8 border-t border-gray-800/50 text-center text-gray-500 text-sm">
+        <p>© 2023 Super Intelligence. All rights reserved.</p>
+        <p class="mt-2">The future of consciousness is here.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- PAGE SCRIPT -->
+  <script>
+    // Active nav highlight (accessibility)
+    (function setActiveNav() {
+      const path = location.pathname.split('/').pop() || 'products.html';
+      document.querySelectorAll('nav a[href]').forEach(a => {
+        const isActive = a.getAttribute('href') === path;
+        if (isActive) {
+          a.classList.add('text-indigo-400');
+          a.setAttribute('aria-current', 'page');
+        }
+      });
+    })();
+
+    // Data model — edit here to add items.
+    // You can later move this array to /products.json and fetch it instead.
+    const PRODUCTS = [
+      {
+        id: 'si-qualia-encoder',
+        title: 'Qualia Encoder',
+        summary: 'A representation learning module for mapping sensory manifolds to structured phenomenal states.',
+        status: 'Prototype',          // Idea | Prototype | Preprint | Published
+        domain: 'AI',
+        tags: ['representation', 'phenomenology'],
+        links: { paper: '#', demo: '#', repo: '#' },
+        updated: '2025-08-01'
+      },
+      {
+        id: 'alignment-weave',
+        title: 'Alignment Weave',
+        summary: 'Composable value-alignment constraints integrated with self-reflective planning loops.',
+        status: 'Preprint',
+        domain: 'Philosophy',
+        tags: ['alignment', 'agency', 'ethics'],
+        links: { paper: '#', demo: '#', repo: '#' },
+        updated: '2025-07-18'
+      },
+      {
+        id: 'neuro-symbolic-loom',
+        title: 'Neuro-Symbolic Loom',
+        summary: 'Hybrid inference fabric that interleaves differentiable memory with programmatic reasoning.',
+        status: 'Idea',
+        domain: 'Systems',
+        tags: ['hybrid', 'reasoning'],
+        links: { paper: '#', demo: '#', repo: '#' },
+        updated: '2025-06-30'
+      },
+      {
+        id: 'bio-synapse-array',
+        title: 'Bio-Synapse Array',
+        summary: 'Memristive hardware design exploring energy-efficient recurrent dynamics.',
+        status: 'Published',
+        domain: 'Hardware',
+        tags: ['memristor', 'energy'],
+        links: { paper: '#', demo: '#', repo: '#' },
+        updated: '2025-05-11'
+      }
+    ];
+
+    // Simple rendering & filtering
+    const grid  = document.getElementById('grid');
+    const empty = document.getElementById('empty');
+    const q     = document.getElementById('search');
+    const fStatus = document.getElementById('status');
+    const fDomain = document.getElementById('domain');
+
+    function escapeHTML(s) {
+      return s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    }
+
+    function card(item) {
+      const tagEls = (item.tags||[]).map(t => `<span class="text-xs px-2 py-0.5 rounded tag mr-1">${escapeHTML(t)}</span>`).join('');
+      const sBadge = `<span class="text-xs px-2 py-0.5 rounded border border-indigo-700/40">${escapeHTML(item.status)}</span>`;
+      const dBadge = `<span class="text-xs px-2 py-0.5 rounded border border-gray-700/60">${escapeHTML(item.domain)}</span>`;
+      const links = `
+        ${item.links?.paper ? `<a class="text-indigo-400 hover:text-indigo-300" href="${item.links.paper}" target="_blank" rel="noopener">Paper</a>` : ''}
+        ${item.links?.demo  ? `· <a class="text-indigo-400 hover:text-indigo-300" href="${item.links.demo}" target="_blank" rel="noopener">Demo</a>`  : ''}
+        ${item.links?.repo  ? `· <a class="text-indigo-400 hover:text-indigo-300" href="${item.links.repo}" target="_blank" rel="noopener">Code</a>`  : ''}
+      `;
+      return `
+        <article class="bg-gray-900/50 border border-gray-800 rounded-xl p-5 conscious-element" tabindex="0" aria-labelledby="${item.id}-title">
+          <div class="flex items-center justify-between mb-3">
+            <h3 id="${item.id}-title" class="text-lg font-semibold">${escapeHTML(item.title)}</h3>
+            <div class="flex items-center gap-2">${sBadge}${dBadge}</div>
+          </div>
+          <p class="text-gray-400">${escapeHTML(item.summary)}</p>
+          <div class="mt-4 flex flex-wrap items-center justify-between gap-2">
+            <div>${tagEls}</div>
+            <div class="text-sm text-gray-400">${links}</div>
+          </div>
+          <div class="mt-3 text-xs text-gray-500">Updated: ${escapeHTML(item.updated)}</div>
+        </article>
+      `;
+    }
+
+    function render(list) {
+      grid.innerHTML = list.map(card).join('');
+      empty.classList.toggle('hidden', list.length !== 0);
+    }
+
+    function filter() {
+      const query = (q.value || '').toLowerCase().trim();
+      const s = fStatus.value;
+      const d = fDomain.value;
+      const out = PRODUCTS.filter(it => {
+        const matchesQ = !query || [it.title, it.summary, (it.tags||[]).join(' '), it.domain].join(' ').toLowerCase().includes(query);
+        const matchesS = !s || it.status === s;
+        const matchesD = !d || it.domain === d;
+        return matchesQ && matchesS && matchesD;
+      }).sort((a,b) => (b.updated||'').localeCompare(a.updated||''));
+      render(out);
+    }
+
+    // Events
+    [q, fStatus, fDomain].forEach(el => el.addEventListener('input', filter));
+    window.addEventListener('keydown', (e) => {
+      if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+        e.preventDefault(); q.focus();
+      }
+    });
+
+    // Initial render
+    render(PRODUCTS);
+  </script>
+</body>
+</html>
