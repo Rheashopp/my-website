@@ -1,0 +1,42 @@
+[
+  {
+    "id": "si-qualia-encoder",
+    "title": "Qualia Encoder",
+    "summary": "A representation learning module for mapping sensory manifolds to structured phenomenal states.",
+    "status": "Prototype",
+    "domain": "AI",
+    "tags": ["representation", "phenomenology"],
+    "links": { "paper": "#", "demo": "#", "repo": "#" },
+    "updated": "2025-08-01"
+  },
+  {
+    "id": "alignment-weave",
+    "title": "Alignment Weave",
+    "summary": "Composable value-alignment constraints integrated with self-reflective planning loops.",
+    "status": "Preprint",
+    "domain": "Philosophy",
+    "tags": ["alignment", "agency", "ethics"],
+    "links": { "paper": "#", "demo": "#", "repo": "#" },
+    "updated": "2025-07-18"
+  },
+  {
+    "id": "neuro-symbolic-loom",
+    "title": "Neuro-Symbolic Loom",
+    "summary": "Hybrid inference fabric that interleaves differentiable memory with programmatic reasoning.",
+    "status": "Idea",
+    "domain": "Systems",
+    "tags": ["hybrid", "reasoning"],
+    "links": { "paper": "#", "demo": "#", "repo": "#" },
+    "updated": "2025-06-30"
+  },
+  {
+    "id": "bio-synapse-array",
+    "title": "Bio-Synapse Array",
+    "summary": "Memristive hardware design exploring energy-efficient recurrent dynamics.",
+    "status": "Published",
+    "domain": "Hardware",
+    "tags": ["memristor", "energy"],
+    "links": { "paper": "#", "demo": "#", "repo": "#" },
+    "updated": "2025-05-11"
+  }
+]
