@@ -12,11 +12,11 @@
   <meta property="og:type" content="website">
   <meta property="og:title" content="Silent — Products & Breakthroughs">
   <meta property="og:description" content="Explore prototypes, preprints, and published breakthroughs from Silent.">
-  <meta property="og:image" content="/og-image.png">
+  <meta property="og:image" content="og-image.png">
   <meta name="twitter:card" content="summary_large_image">
 
   <!-- Icons & fonts -->
-  <link rel="icon" href="/favicon.ico">
+  <link rel="icon" href="favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
@@ -95,6 +95,7 @@
             </div>
             <div class="flex flex-wrap gap-2">
               <!-- Status -->
+              <label for="status" class="sr-only">Filter by status</label>
               <select id="status" class="bg-gray-800/60 border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-600">
                 <option value="">Status: Any</option>
                 <option value="Idea">Idea</option>
@@ -103,6 +104,7 @@
                 <option value="Published">Published</option>
               </select>
               <!-- Domain -->
+              <label for="domain" class="sr-only">Filter by domain</label>
               <select id="domain" class="bg-gray-800/60 border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-600">
                 <option value="">Domain: Any</option>
                 <option value="AI">AI</option>
@@ -114,6 +116,7 @@
               </select>
             </div>
           </div>
+
           <div class="mt-3 text-xs text-gray-500">
             Status legend:
             <span class="inline-block px-2 py-0.5 rounded tag mr-1">Idea</span>
@@ -121,6 +124,8 @@
             <span class="inline-block px-2 py-0.5 rounded tag mr-1">Preprint</span>
             <span class="inline-block px-2 py-0.5 rounded tag">Published</span>
           </div>
+
+          <p id="results-count" class="mt-3 text-xs text-gray-500" aria-live="polite"></p>
         </div>
       </div>
     </section>
@@ -128,7 +133,7 @@
     <!-- GRID -->
     <section class="py-10 px-6">
       <div class="max-w-6xl mx-auto">
-        <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" role="list"></div>
         <div id="empty" class="hidden text-center text-gray-500 mt-12">
           No items match your filters.
         </div>
@@ -165,6 +170,12 @@
       </div>
     </div>
   </footer>
+
+  <noscript>
+    <div class="max-w-6xl mx-auto px-6 py-6 text-sm text-gray-400">
+      This catalog requires JavaScript to render items. Please enable JavaScript.
+    </div>
+  </noscript>
 
   <!-- PAGE SCRIPT -->
   <script>
@@ -225,28 +236,59 @@
       }
     ];
 
+    // Structured data (SEO)
+    (function addStructuredData(){
+      try {
+        const list = PRODUCTS.map((p) => ({
+          "@type": "CreativeWork",
+          "name": p.title,
+          "description": p.summary,
+          "dateModified": p.updated,
+          "keywords": [p.domain, ...(p.tags||[])].filter(Boolean).join(", ")
+        }));
+        const ld = {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "itemListElement": list.map((item, i) => ({
+            "@type": "ListItem",
+            "position": i + 1,
+            "item": item
+          }))
+        };
+        const s = document.createElement('script');
+        s.type = 'application/ld+json';
+        s.textContent = JSON.stringify(ld);
+        document.head.appendChild(s);
+      } catch(e) {}
+    })();
+
     // Simple rendering & filtering
-    const grid  = document.getElementById('grid');
-    const empty = document.getElementById('empty');
-    const q     = document.getElementById('search');
-    const fStatus = document.getElementById('status');
-    const fDomain = document.getElementById('domain');
+    const grid   = document.getElementById('grid');
+    const empty  = document.getElementById('empty');
+    const q      = document.getElementById('search');
+    const fStatus= document.getElementById('status');
+    const fDomain= document.getElementById('domain');
+    const countEl= document.getElementById('results-count');
 
     function escapeHTML(s) {
       return s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    }
+
+    function linkList(links) {
+      const parts = [];
+      if (links?.paper) parts.push(`<a class="text-indigo-400 hover:text-indigo-300" href="${links.paper}" target="_blank" rel="noopener noreferrer">Paper</a>`);
+      if (links?.demo)  parts.push(`<a class="text-indigo-400 hover:text-indigo-300" href="${links.demo}"  target="_blank" rel="noopener noreferrer">Demo</a>`);
+      if (links?.repo)  parts.push(`<a class="text-indigo-400 hover:text-indigo-300" href="${links.repo}"  target="_blank" rel="noopener noreferrer">Code</a>`);
+      return parts.join(' · ');
     }
 
     function card(item) {
       const tagEls = (item.tags||[]).map(t => `<span class="text-xs px-2 py-0.5 rounded tag mr-1">${escapeHTML(t)}</span>`).join('');
       const sBadge = `<span class="text-xs px-2 py-0.5 rounded border border-indigo-700/40">${escapeHTML(item.status)}</span>`;
       const dBadge = `<span class="text-xs px-2 py-0.5 rounded border border-gray-700/60">${escapeHTML(item.domain)}</span>`;
-      const links = `
-        ${item.links?.paper ? `<a class="text-indigo-400 hover:text-indigo-300" href="${item.links.paper}" target="_blank" rel="noopener">Paper</a>` : ''}
-        ${item.links?.demo  ? `· <a class="text-indigo-400 hover:text-indigo-300" href="${item.links.demo}" target="_blank" rel="noopener">Demo</a>`  : ''}
-        ${item.links?.repo  ? `· <a class="text-indigo-400 hover:text-indigo-300" href="${item.links.repo}" target="_blank" rel="noopener">Code</a>`  : ''}
-      `;
+      const links  = linkList(item.links);
       return `
-        <article class="bg-gray-900/50 border border-gray-800 rounded-xl p-5 conscious-element" tabindex="0" aria-labelledby="${item.id}-title">
+        <article role="listitem" class="bg-gray-900/50 border border-gray-800 rounded-xl p-5 conscious-element" tabindex="0" aria-labelledby="${item.id}-title">
           <div class="flex items-center justify-between mb-3">
             <h3 id="${item.id}-title" class="text-lg font-semibold">${escapeHTML(item.title)}</h3>
             <div class="flex items-center gap-2">${sBadge}${dBadge}</div>
@@ -264,6 +306,7 @@
     function render(list) {
       grid.innerHTML = list.map(card).join('');
       empty.classList.toggle('hidden', list.length !== 0);
+      if (countEl) countEl.textContent = `${list.length} item${list.length === 1 ? '' : 's'} shown`;
     }
 
     function filter() {
@@ -271,12 +314,30 @@
       const s = fStatus.value;
       const d = fDomain.value;
       const out = PRODUCTS.filter(it => {
-        const matchesQ = !query || [it.title, it.summary, (it.tags||[]).join(' '), it.domain].join(' ').toLowerCase().includes(query);
+        const hay = [it.title, it.summary, (it.tags||[]).join(' '), it.domain].join(' ').toLowerCase();
+        const matchesQ = !query || hay.includes(query);
         const matchesS = !s || it.status === s;
         const matchesD = !d || it.domain === d;
         return matchesQ && matchesS && matchesD;
       }).sort((a,b) => (b.updated||'').localeCompare(a.updated||''));
+      writeParams();
       render(out);
+    }
+
+    // Shareable filters via query string
+    function readParams() {
+      const u = new URL(location.href);
+      q.value        = u.searchParams.get('q') || '';
+      fStatus.value  = u.searchParams.get('status') || '';
+      fDomain.value  = u.searchParams.get('domain') || '';
+    }
+    function writeParams() {
+      const u = new URL(location.href);
+      const set = (k,v) => v ? u.searchParams.set(k,v) : u.searchParams.delete(k);
+      set('q', q.value.trim());
+      set('status', fStatus.value);
+      set('domain', fDomain.value);
+      history.replaceState(null, '', u.toString());
     }
 
     // Events
@@ -287,8 +348,9 @@
       }
     });
 
-    // Initial render
-    render(PRODUCTS);
+    // Initial render (read URL → filter → render sorted)
+    readParams();
+    filter();
   </script>
 </body>
 </html>
