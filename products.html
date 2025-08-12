@@ -46,7 +46,7 @@
   <!-- Skip link -->
   <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 bg-indigo-600 text-white px-3 py-2 rounded-lg z-[100]">Skip to content</a>
 
-  <!-- NAVBAR (mirrors index, includes Products) -->
+  <!-- NAVBAR -->
   <nav class="relative z-10 py-6 px-8 flex justify-between items-center backdrop-blur-sm border-b border-gray-800/50">
     <a href="index.html" class="flex items-center space-x-2 hover:opacity-80 transition" aria-label="Silent home">
       <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center">
@@ -133,15 +133,16 @@
     <!-- GRID -->
     <section class="py-10 px-6">
       <div class="max-w-6xl mx-auto">
-        <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" role="list"></div>
+        <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" role="list" aria-busy="true"></div>
         <div id="empty" class="hidden text-center text-gray-500 mt-12">
           No items match your filters.
         </div>
+        <p id="loading" class="text-center text-gray-500 mt-6">Loading catalog…</p>
       </div>
     </section>
   </main>
 
-  <!-- FOOTER (mirrors index) -->
+  <!-- FOOTER -->
   <footer class="relative z-10 py-12 px-6 border-t border-gray-800/50">
     <div class="max-w-6xl mx-auto">
       <div class="flex flex-col md:flex-row justify-between items-center">
@@ -179,7 +180,7 @@
 
   <!-- PAGE SCRIPT -->
   <script>
-    // Active nav highlight (accessibility)
+    // Active nav highlight
     (function setActiveNav() {
       const path = location.pathname.split('/').pop() || 'products.html';
       document.querySelectorAll('nav a[href]').forEach(a => {
@@ -191,89 +192,20 @@
       });
     })();
 
-    // Data model — edit here to add items.
-    // You can later move this array to /products.json and fetch it instead.
-    const PRODUCTS = [
-      {
-        id: 'si-qualia-encoder',
-        title: 'Qualia Encoder',
-        summary: 'A representation learning module for mapping sensory manifolds to structured phenomenal states.',
-        status: 'Prototype',          // Idea | Prototype | Preprint | Published
-        domain: 'AI',
-        tags: ['representation', 'phenomenology'],
-        links: { paper: '#', demo: '#', repo: '#' },
-        updated: '2025-08-01'
-      },
-      {
-        id: 'alignment-weave',
-        title: 'Alignment Weave',
-        summary: 'Composable value-alignment constraints integrated with self-reflective planning loops.',
-        status: 'Preprint',
-        domain: 'Philosophy',
-        tags: ['alignment', 'agency', 'ethics'],
-        links: { paper: '#', demo: '#', repo: '#' },
-        updated: '2025-07-18'
-      },
-      {
-        id: 'neuro-symbolic-loom',
-        title: 'Neuro-Symbolic Loom',
-        summary: 'Hybrid inference fabric that interleaves differentiable memory with programmatic reasoning.',
-        status: 'Idea',
-        domain: 'Systems',
-        tags: ['hybrid', 'reasoning'],
-        links: { paper: '#', demo: '#', repo: '#' },
-        updated: '2025-06-30'
-      },
-      {
-        id: 'bio-synapse-array',
-        title: 'Bio-Synapse Array',
-        summary: 'Memristive hardware design exploring energy-efficient recurrent dynamics.',
-        status: 'Published',
-        domain: 'Hardware',
-        tags: ['memristor', 'energy'],
-        links: { paper: '#', demo: '#', repo: '#' },
-        updated: '2025-05-11'
-      }
-    ];
+    // Globals
+    let PRODUCTS = [];
+    const grid    = document.getElementById('grid');
+    const empty   = document.getElementById('empty');
+    const loading = document.getElementById('loading');
+    const q       = document.getElementById('search');
+    const fStatus = document.getElementById('status');
+    const fDomain = document.getElementById('domain');
+    const countEl = document.getElementById('results-count');
 
-    // Structured data (SEO)
-    (function addStructuredData(){
-      try {
-        const list = PRODUCTS.map((p) => ({
-          "@type": "CreativeWork",
-          "name": p.title,
-          "description": p.summary,
-          "dateModified": p.updated,
-          "keywords": [p.domain, ...(p.tags||[])].filter(Boolean).join(", ")
-        }));
-        const ld = {
-          "@context": "https://schema.org",
-          "@type": "ItemList",
-          "itemListElement": list.map((item, i) => ({
-            "@type": "ListItem",
-            "position": i + 1,
-            "item": item
-          }))
-        };
-        const s = document.createElement('script');
-        s.type = 'application/ld+json';
-        s.textContent = JSON.stringify(ld);
-        document.head.appendChild(s);
-      } catch(e) {}
-    })();
-
-    // Simple rendering & filtering
-    const grid   = document.getElementById('grid');
-    const empty  = document.getElementById('empty');
-    const q      = document.getElementById('search');
-    const fStatus= document.getElementById('status');
-    const fDomain= document.getElementById('domain');
-    const countEl= document.getElementById('results-count');
-
+    // Helpers
     function escapeHTML(s) {
       return s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
     }
-
     function linkList(links) {
       const parts = [];
       if (links?.paper) parts.push(`<a class="text-indigo-400 hover:text-indigo-300" href="${links.paper}" target="_blank" rel="noopener noreferrer">Paper</a>`);
@@ -281,7 +213,6 @@
       if (links?.repo)  parts.push(`<a class="text-indigo-400 hover:text-indigo-300" href="${links.repo}"  target="_blank" rel="noopener noreferrer">Code</a>`);
       return parts.join(' · ');
     }
-
     function card(item) {
       const tagEls = (item.tags||[]).map(t => `<span class="text-xs px-2 py-0.5 rounded tag mr-1">${escapeHTML(t)}</span>`).join('');
       const sBadge = `<span class="text-xs px-2 py-0.5 rounded border border-indigo-700/40">${escapeHTML(item.status)}</span>`;
@@ -302,13 +233,31 @@
         </article>
       `;
     }
-
     function render(list) {
       grid.innerHTML = list.map(card).join('');
+      grid.setAttribute('aria-busy', 'false');
+      loading.classList.add('hidden');
       empty.classList.toggle('hidden', list.length !== 0);
       if (countEl) countEl.textContent = `${list.length} item${list.length === 1 ? '' : 's'} shown`;
     }
 
+    // URL params (shareable filters)
+    function readParams() {
+      const u = new URL(location.href);
+      q.value       = u.searchParams.get('q') || '';
+      fStatus.value = u.searchParams.get('status') || '';
+      fDomain.value = u.searchParams.get('domain') || '';
+    }
+    function writeParams() {
+      const u = new URL(location.href);
+      const set = (k,v) => v ? u.searchParams.set(k,v) : u.searchParams.delete(k);
+      set('q', q.value.trim());
+      set('status', fStatus.value);
+      set('domain', fDomain.value);
+      history.replaceState(null, '', u.toString());
+    }
+
+    // Filtering
     function filter() {
       const query = (q.value || '').toLowerCase().trim();
       const s = fStatus.value;
@@ -324,20 +273,50 @@
       render(out);
     }
 
-    // Shareable filters via query string
-    function readParams() {
-      const u = new URL(location.href);
-      q.value        = u.searchParams.get('q') || '';
-      fStatus.value  = u.searchParams.get('status') || '';
-      fDomain.value  = u.searchParams.get('domain') || '';
+    // Structured data (after data is loaded)
+    function addStructuredData(items){
+      try {
+        const list = items.map(p => ({
+          "@type": "CreativeWork",
+          "name": p.title,
+          "description": p.summary,
+          "dateModified": p.updated,
+          "keywords": [p.domain, ...(p.tags||[])].filter(Boolean).join(", ")
+        }));
+        const ld = {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "itemListElement": list.map((item, i) => ({
+            "@type": "ListItem",
+            "position": i + 1,
+            "item": item
+          }))
+        };
+        const s = document.createElement('script');
+        s.type = 'application/ld+json';
+        s.textContent = JSON.stringify(ld);
+        document.head.appendChild(s);
+      } catch(e) {}
     }
-    function writeParams() {
-      const u = new URL(location.href);
-      const set = (k,v) => v ? u.searchParams.set(k,v) : u.searchParams.delete(k);
-      set('q', q.value.trim());
-      set('status', fStatus.value);
-      set('domain', fDomain.value);
-      history.replaceState(null, '', u.toString());
+
+    // Data load
+    async function loadProducts() {
+      try {
+        // Cache-bust on GitHub Pages when you update products.json: bump the version number.
+        const url = new URL('products.json', location.href);
+        url.searchParams.set('v', '1');
+        const res = await fetch(url.toString(), { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        PRODUCTS = Array.isArray(data) ? data : [];
+      } catch (err) {
+        console.error('Failed to load products.json:', err);
+        PRODUCTS = [];
+        document.getElementById('empty').textContent = 'Failed to load catalog.';
+      } finally {
+        addStructuredData(PRODUCTS);
+        filter();
+      }
     }
 
     // Events
@@ -348,9 +327,9 @@
       }
     });
 
-    // Initial render (read URL → filter → render sorted)
+    // Init
     readParams();
-    filter();
+    loadProducts();
   </script>
 </body>
 </html>
