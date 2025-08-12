@@ -96,6 +96,9 @@
       <a href="capabilities.html" class="hover:text-indigo-400 transition">Capabilities</a>
       <a href="consciousness.html" class="hover:text-indigo-400 transition">Consciousness</a>
       <a href="chat.html" class="hover:text-indigo-400 transition">Chat</a>
+      <!-- NEW: Products -->
+      <a href="products.html" class="hover:text-indigo-400 transition">Products</a>
+      <!-- /NEW -->
       <a href="about.html" class="hover:text-indigo-400 transition">About</a>
     </div>
     <button id="access-btn" class="px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full hover:opacity-90 transition">
@@ -627,6 +630,20 @@
 
   <!-- MAIN SCRIPT -->
   <script>
+    // ---------------------------
+    // Nav: highlight active page
+    // ---------------------------
+    (function setActiveNav() {
+      const path = location.pathname.split('/').pop() || 'index.html';
+      document.querySelectorAll('nav a[href]').forEach(a => {
+        const isActive = a.getAttribute('href') === path;
+        if (isActive) {
+          a.classList.add('text-indigo-400');
+          a.setAttribute('aria-current', 'page');
+        }
+      });
+    })();
+
     // Respect reduced motion for heavy effects
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -649,6 +666,15 @@
           maxDistance: 20.00,
           spacing: 15.00
         });
+      }
+
+      // If URL has #access (e.g., from products page), open the modal automatically
+      if (location.hash === '#access') {
+        const accessModal = document.getElementById('access-modal');
+        if (accessModal) {
+          toggleModal(accessModal, true);
+          setTimeout(() => { document.getElementById('name')?.focus(); }, 100);
+        }
       }
     });
     window.addEventListener('resize', () => {
