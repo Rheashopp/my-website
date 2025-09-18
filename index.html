@@ -1056,37 +1056,6 @@
       }
       requestAnimationFrame(drawNeuralActivity);
     }
-    const heroOrbContainer = document.getElementById('conscious-orb-container');
-    if (heroOrbContainer) {
-      window.SILENT_CONFIG = window.SILENT_CONFIG || {};
-      window.SILENT_CONFIG.site = window.SILENT_CONFIG.site || {};
-      if (!window.SILENT_CONFIG.site.basePath) {
-        window.SILENT_CONFIG.site.basePath = '.';
-      }
-      window.SILENT_CONFIG.voice = window.SILENT_CONFIG.voice || {
-        provider: 'demo',
-        ttsVoiceName: null,
-      };
-
-      const head = document.head;
-      if (head) {
-        if (!head.querySelector('script[data-voice-viz]')) {
-          const vizScript = document.createElement('script');
-          vizScript.src = 'assets/js/vendor/webaudio-viz.js';
-          vizScript.defer = true;
-          vizScript.dataset.voiceViz = 'true';
-          head.appendChild(vizScript);
-        }
-
-        if (!head.querySelector('script[data-voice-controller]')) {
-          const voiceScript = document.createElement('script');
-          voiceScript.src = 'assets/js/voice.js';
-          voiceScript.defer = true;
-          voiceScript.dataset.voiceController = 'true';
-          head.appendChild(voiceScript);
-        }
-      }
-    }
   </script>
 </body>
 </html>

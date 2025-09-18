@@ -57,6 +57,7 @@
     initProductCatalog();
     initProductDetail();
     initContactForm();
+    initVoiceOverlayLoader();
   });
 
   function applyBasePathLinks() {
@@ -502,5 +503,68 @@
 
   function isValidEmail(value) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  }
+
+  function initVoiceOverlayLoader() {
+    const anchor = findVoiceOverlayAnchor();
+    if (!anchor) return;
+
+    loadScriptOnce(resolvePath('assets/js/vendor/webaudio-viz.js'), 'data-voice-viz')
+      .then(() => loadScriptOnce(resolvePath('assets/js/voice.js'), 'data-voice-controller'))
+      .then(() => {
+        if (typeof window.initVoiceOverlay === 'function') {
+          const config = window.SILENT_CONFIG?.voice || { provider: 'demo', ttsVoiceName: null };
+          window.initVoiceOverlay(anchor, config);
+        }
+      })
+      .catch((error) => {
+        console.error('Voice overlay failed to load', error);
+      });
+  }
+
+  function findVoiceOverlayAnchor() {
+    const direct = document.getElementById('conscious-orb-container');
+    if (direct) {
+      return direct;
+    }
+    const hero = document.querySelector('main section');
+    if (hero && hero.firstElementChild instanceof HTMLElement) {
+      return hero.firstElementChild;
+    }
+    return null;
+  }
+
+  function loadScriptOnce(src, markerAttr) {
+    return new Promise((resolve, reject) => {
+      if (!src) {
+        resolve();
+        return;
+      }
+      const selector = markerAttr ? `script[${markerAttr}]` : null;
+      if (selector) {
+        const existing = document.querySelector(selector);
+        if (existing) {
+          if (existing.dataset.loaded === 'true' || existing.hasAttribute('data-loaded')) {
+            resolve();
+            return;
+          }
+          existing.addEventListener('load', () => resolve(), { once: true });
+          existing.addEventListener('error', (event) => reject(event), { once: true });
+          return;
+        }
+      }
+      const script = document.createElement('script');
+      script.src = src;
+      script.defer = true;
+      if (markerAttr) {
+        script.setAttribute(markerAttr, 'true');
+      }
+      script.addEventListener('load', () => {
+        script.dataset.loaded = 'true';
+        resolve();
+      });
+      script.addEventListener('error', (event) => reject(event));
+      document.head.appendChild(script);
+    });
   }
 })();

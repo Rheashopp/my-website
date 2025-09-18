@@ -1,60 +1,39 @@
-(function () {
+(function (global) {
   'use strict';
 
-  document.addEventListener('DOMContentLoaded', () => {
-    let orb = document.getElementById('voice-orb');
-    let statusEls = document.querySelectorAll('.voice-status [data-state]');
-    let transcriptEl = document.querySelector('.voice-transcript');
-    let logEl = document.querySelector('.voice-log');
-    let consentEl = document.querySelector('.voice-consent');
-    let consentBtn = document.getElementById('voice-consent-accept');
-
-    const overlay = !orb ? injectOverlay() : null;
-    if (!orb && overlay) {
-      orb = overlay.orb;
-      statusEls = overlay.statusEls;
-      transcriptEl = overlay.transcriptEl;
-      logEl = overlay.logEl;
-      consentEl = overlay.consentEl;
-      consentBtn = overlay.consentBtn;
+  function initVoiceOverlay(anchor, externalConfig) {
+    if (!anchor || anchor.dataset.voiceOverlayInitialized === 'true') {
+      return;
     }
 
-    if (!orb) return;
+    anchor.dataset.voiceOverlayInitialized = 'true';
 
-    if (!statusEls || !statusEls.length) {
-      statusEls = document.querySelectorAll('.voice-status [data-state]');
-    }
-    if (!transcriptEl) {
-      transcriptEl = document.querySelector('.voice-transcript');
-    }
-    if (!logEl) {
-      logEl = document.querySelector('.voice-log');
-    }
-    if (!consentEl) {
-      consentEl = document.querySelector('.voice-consent');
-    }
-    if (!consentBtn && consentEl) {
-      consentBtn = consentEl.querySelector('button');
-    }
+    const doc = anchor.ownerDocument || global.document;
+    const voiceConfig = Object.assign({ provider: 'demo', ttsVoiceName: null }, externalConfig || {});
+    const basePath = normalizeBasePath(global.SILENT_CONFIG?.site?.basePath);
+    const resolveAsset = (target) => resolveSitePath(basePath, target);
+
+    ensureVoiceStyles(doc, resolveAsset('assets/css/voice.css'));
+
+    const overlay = buildOverlay(doc);
+    anchor.appendChild(overlay.root);
+
+    const orb = overlay.orb;
+    const statusEls = Array.from(overlay.statusEls);
+    const transcriptEl = overlay.transcriptEl;
+    const logEl = overlay.logEl;
+    const consentEl = overlay.consentEl;
+    const consentBtn = overlay.consentBtn;
+    const voiceFallback = overlay.fallback;
 
     let hasConsent = false;
     let recognition;
     let mediaStream;
     let finalTranscript = '';
     let currentState = 'idle';
-    const viz = typeof WebAudioViz !== 'undefined' ? new WebAudioViz() : null;
-    const supportsSTT = 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window;
-    const voiceFallback = createFallback();
-    let sessionId = window.localStorage.getItem('silent-session-id');
-    if (!sessionId && window.crypto && window.crypto.randomUUID) {
-      sessionId = crypto.randomUUID();
-      window.localStorage.setItem('silent-session-id', sessionId);
-    }
-
-    const voiceConfig = window.SILENT_CONFIG && window.SILENT_CONFIG.voice ? window.SILENT_CONFIG.voice : { provider: 'demo' };
-    const basePath = normalizeBasePath(window.SILENT_CONFIG?.site?.basePath);
-
-    ensureVoiceStyles(resolveSitePath('assets/css/voice.css'));
+    const viz = typeof global.WebAudioViz !== 'undefined' ? new global.WebAudioViz() : null;
+    const supportsSTT = 'SpeechRecognition' in global || 'webkitSpeechRecognition' in global;
+    let sessionId = getSessionId(global.localStorage, global.crypto);
 
     setState('idle');
 
@@ -62,47 +41,15 @@
       voiceFallback.container.hidden = false;
     }
 
-    if (consentBtn) {
-      consentBtn.addEventListener('click', () => {
-        hasConsent = true;
-        if (consentEl) {
-          consentEl.hidden = true;
+    if (voiceFallback && voiceFallback.textarea) {
+      voiceFallback.textarea.addEventListener('blur', () => {
+        if (!voiceFallback.textarea.value.trim()) {
+          voiceFallback.container.hidden = true;
         }
-        orb.focus();
       });
     }
 
-    orb.addEventListener('click', () => {
-      if (!hasConsent && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        if (consentEl) {
-          consentEl.hidden = false;
-          consentEl.querySelector('button')?.focus();
-        } else {
-          hasConsent = true;
-        }
-        return;
-      }
-      if (currentState === 'idle') {
-        beginListening();
-      } else {
-        cancelInteraction();
-      }
-    });
-
-    orb.addEventListener('keydown', (event) => {
-      if (event.key === ' ' || event.key === 'Enter') {
-        event.preventDefault();
-        orb.click();
-      }
-    });
-
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && currentState !== 'idle') {
-        cancelInteraction();
-      }
-    });
-
-    if (voiceFallback) {
+    if (voiceFallback && voiceFallback.form) {
       voiceFallback.form.addEventListener('submit', (event) => {
         event.preventDefault();
         const value = voiceFallback.textarea.value.trim();
@@ -117,19 +64,61 @@
       });
     }
 
+    if (consentBtn) {
+      consentBtn.addEventListener('click', () => {
+        hasConsent = true;
+        if (consentEl) {
+          consentEl.hidden = true;
+        }
+        orb.focus();
+      });
+    }
+
+    orb.addEventListener('click', () => {
+      if (!hasConsent && global.navigator.mediaDevices && global.navigator.mediaDevices.getUserMedia) {
+        if (consentEl) {
+          consentEl.hidden = false;
+          consentBtn?.focus();
+        } else {
+          hasConsent = true;
+        }
+        return;
+      }
+
+      if (currentState === 'idle') {
+        beginListening();
+      } else {
+        cancelInteraction();
+      }
+    });
+
+    orb.addEventListener('keydown', (event) => {
+      if (event.key === ' ' || event.key === 'Enter') {
+        event.preventDefault();
+        orb.click();
+      }
+    });
+
+    global.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && currentState !== 'idle') {
+        cancelInteraction();
+      }
+    });
+
     function beginListening() {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      if (!global.navigator.mediaDevices || !global.navigator.mediaDevices.getUserMedia) {
         if (voiceFallback) {
           voiceFallback.notice.textContent = 'Microphone access is unavailable here. Type your request instead.';
           voiceFallback.container.hidden = false;
         }
         return;
       }
-      navigator.mediaDevices
+
+      global.navigator.mediaDevices
         .getUserMedia({ audio: true })
         .then((stream) => {
           mediaStream = stream;
-          if (viz) {
+          if (viz && typeof viz.setup === 'function') {
             viz.setup(stream, (level) => {
               orb.style.setProperty('--vu-level', level.toFixed(2));
               const vu = orb.querySelector('.orb-vu');
@@ -158,7 +147,8 @@
         setState('idle');
         return;
       }
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+      const SpeechRecognition = global.SpeechRecognition || global.webkitSpeechRecognition;
       recognition = new SpeechRecognition();
       recognition.lang = 'en-US';
       recognition.interimResults = true;
@@ -254,14 +244,14 @@
 
     function speak(text) {
       return new Promise((resolve) => {
-        if (!('speechSynthesis' in window)) {
+        if (!('speechSynthesis' in global)) {
           resolve();
           return;
         }
         setState('speaking');
-        const utterance = new SpeechSynthesisUtterance(text);
+        const utterance = new global.SpeechSynthesisUtterance(text);
         if (voiceConfig.ttsVoiceName) {
-          const voice = window.speechSynthesis.getVoices().find((v) => v.name === voiceConfig.ttsVoiceName);
+          const voice = global.speechSynthesis.getVoices().find((v) => v.name === voiceConfig.ttsVoiceName);
           if (voice) {
             utterance.voice = voice;
           }
@@ -272,8 +262,8 @@
         utterance.onerror = () => {
           resolve();
         };
-        window.speechSynthesis.cancel();
-        window.speechSynthesis.speak(utterance);
+        global.speechSynthesis.cancel();
+        global.speechSynthesis.speak(utterance);
       });
     }
 
@@ -283,7 +273,7 @@
         return {
           respond: (text) => {
             setState('thinking');
-            return fetch(resolveSitePath('api/llm'), {
+            return fetch(resolveAsset('api/llm'), {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -318,7 +308,7 @@
             const plan = plans[Math.floor(Math.random() * plans.length)];
             const template = templates[Math.floor(Math.random() * templates.length)];
             const reply = template.replace('{plan}', plan);
-            setTimeout(() => resolve(reply), 900 + Math.random() * 600);
+            global.setTimeout(() => resolve(reply), 900 + Math.random() * 600);
           }),
       };
     }
@@ -343,7 +333,7 @@
     function appendLog(role, text) {
       if (!logEl) return;
       logEl.hidden = false;
-      const entry = document.createElement('p');
+      const entry = doc.createElement('p');
       entry.textContent = `${role === 'user' ? 'You' : 'Silent'}: ${text}`;
       logEl.prepend(entry);
       while (logEl.children.length > 5) {
@@ -362,8 +352,8 @@
         }
         recognition = null;
       }
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
+      if ('speechSynthesis' in global) {
+        global.speechSynthesis.cancel();
       }
       releaseAudio();
       if (transcriptEl) {
@@ -373,7 +363,7 @@
     }
 
     function releaseAudio() {
-      if (viz) {
+      if (viz && typeof viz.cleanup === 'function') {
         viz.cleanup();
       }
       if (mediaStream) {
@@ -381,160 +371,175 @@
         mediaStream = null;
       }
     }
+  }
 
-    function normalizeBasePath(value) {
-      if (typeof value !== 'string' || value.length === 0) {
-        return '.';
+  function buildOverlay(doc) {
+    const root = doc.createElement('div');
+    root.className = 'voice-overlay';
+    root.setAttribute('role', 'presentation');
+
+    const orbButton = doc.createElement('button');
+    orbButton.type = 'button';
+    orbButton.id = 'voice-orb';
+    orbButton.className = 'voice-orb orb--idle';
+    orbButton.setAttribute('aria-pressed', 'false');
+    orbButton.setAttribute('aria-label', 'Press to talk with Silent');
+
+    const srText = doc.createElement('span');
+    srText.className = 'sr-only';
+    srText.textContent = 'Press to talk with Silent';
+    orbButton.appendChild(srText);
+
+    const core = doc.createElement('span');
+    core.className = 'orb-core';
+    orbButton.appendChild(core);
+
+    const halo = doc.createElement('span');
+    halo.className = 'orb-halo';
+    orbButton.appendChild(halo);
+
+    const vu = doc.createElement('span');
+    vu.className = 'orb-vu';
+    orbButton.appendChild(vu);
+
+    root.appendChild(orbButton);
+
+    const status = doc.createElement('div');
+    status.className = 'voice-status';
+    status.setAttribute('role', 'status');
+    status.setAttribute('aria-live', 'polite');
+    const stateLabels = {
+      idle: 'Ready.',
+      listening: 'Listening…',
+      thinking: 'Thinking…',
+      speaking: 'Answering…',
+    };
+    Object.keys(stateLabels).forEach((state) => {
+      const span = doc.createElement('span');
+      span.setAttribute('data-state', state);
+      span.textContent = stateLabels[state];
+      if (state !== 'idle') {
+        span.hidden = true;
       }
-      const sanitized = value.replace(/\/+$/, '');
-      return sanitized.length ? sanitized : '.';
+      status.appendChild(span);
+    });
+    root.appendChild(status);
+
+    const transcript = doc.createElement('div');
+    transcript.className = 'voice-transcript';
+    transcript.setAttribute('aria-live', 'polite');
+    transcript.setAttribute('aria-atomic', 'true');
+    root.appendChild(transcript);
+
+    const log = doc.createElement('div');
+    log.className = 'voice-log';
+    log.hidden = true;
+    root.appendChild(log);
+
+    const consent = doc.createElement('div');
+    consent.className = 'voice-consent';
+    consent.hidden = true;
+    const consentText = doc.createElement('p');
+    consentText.textContent = 'We’ll use your microphone only while the orb is on. Nothing is sent until you speak.';
+    consent.appendChild(consentText);
+    const consentBtn = doc.createElement('button');
+    consentBtn.className = 'voice-btn voice-btn--primary';
+    consentBtn.id = 'voice-consent-accept';
+    consentBtn.type = 'button';
+    consentBtn.textContent = 'OK';
+    consent.appendChild(consentBtn);
+    root.appendChild(consent);
+
+    const fallback = doc.createElement('div');
+    fallback.className = 'voice-text-fallback';
+    fallback.hidden = true;
+    const fallbackNotice = doc.createElement('p');
+    fallbackNotice.className = 'voice-text-notice';
+    fallbackNotice.id = 'voice-text-notice';
+    fallbackNotice.setAttribute('role', 'status');
+    fallbackNotice.textContent = 'Public demo coming soon — request access for the full voice interface.';
+    fallback.appendChild(fallbackNotice);
+    const fallbackForm = doc.createElement('form');
+    const label = doc.createElement('label');
+    label.setAttribute('for', 'voice-textarea');
+    label.textContent = 'Type to ask Silent';
+    fallbackForm.appendChild(label);
+    const textarea = doc.createElement('textarea');
+    textarea.id = 'voice-textarea';
+    textarea.name = 'voice-textarea';
+    textarea.rows = 4;
+    textarea.setAttribute('placeholder', 'Describe what you need');
+    textarea.setAttribute('aria-describedby', 'voice-text-notice');
+    fallbackForm.appendChild(textarea);
+    const submit = doc.createElement('button');
+    submit.type = 'submit';
+    submit.className = 'voice-btn voice-btn--secondary';
+    submit.textContent = 'Send prompt';
+    fallbackForm.appendChild(submit);
+    fallback.appendChild(fallbackForm);
+    root.appendChild(fallback);
+
+    return {
+      root,
+      orb: orbButton,
+      statusEls: status.querySelectorAll('[data-state]'),
+      transcriptEl: transcript,
+      logEl: log,
+      consentEl: consent,
+      consentBtn,
+      fallback: { container: fallback, form: fallbackForm, textarea, notice: fallbackNotice },
+    };
+  }
+
+  function ensureVoiceStyles(doc, href) {
+    if (!href || !doc.head) return;
+    const absoluteHref = new URL(href, doc.baseURI).href;
+    const existing = Array.from(doc.head.querySelectorAll('link[rel="stylesheet"]'));
+    if (existing.some((link) => link.href === absoluteHref)) {
+      return;
     }
+    const link = doc.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href;
+    link.setAttribute('data-voice-overlay', 'true');
+    doc.head.appendChild(link);
+  }
 
-    function resolveSitePath(target) {
-      if (!target) return target;
-      if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(target) || target.startsWith('//')) {
-        return target;
-      }
-      const cleanTarget = target.replace(/^\/+/, '');
-      if (basePath === '.' || basePath === '') {
-        return cleanTarget.startsWith('./') || cleanTarget.startsWith('../')
-          ? cleanTarget
-          : `./${cleanTarget}`;
-      }
-      return `${basePath}/${cleanTarget}`.replace(/\/{2,}/g, '/');
+  function normalizeBasePath(value) {
+    if (typeof value !== 'string' || value.length === 0) {
+      return '.';
     }
+    const sanitized = value.replace(/\/+$/, '');
+    return sanitized.length ? sanitized : '.';
+  }
 
-    function createFallback() {
-      const wrapper = document.createElement('div');
-      wrapper.className = 'voice-text-fallback';
-      wrapper.hidden = true;
-      wrapper.innerHTML = `
-        <p class="notice" role="status">Public demo coming soon — request access for the full voice interface.</p>
-        <form>
-          <label for="voice-textarea">Type to ask Silent</label>
-          <textarea id="voice-textarea" name="voice-textarea" rows="4" placeholder="Describe what you need" aria-describedby="voice-text-notice"></textarea>
-          <button class="btn btn-secondary" type="submit">Send prompt</button>
-        </form>
-      `;
-      const notice = wrapper.querySelector('.notice');
-      notice.id = 'voice-text-notice';
-      const form = wrapper.querySelector('form');
-      const textarea = wrapper.querySelector('textarea');
-      orb.insertAdjacentElement('afterend', wrapper);
-      textarea.addEventListener('blur', () => {
-        if (!textarea.value.trim()) {
-          wrapper.hidden = true;
-        }
-      });
-      return { container: wrapper, form, textarea, notice };
+  function resolveSitePath(basePath, target) {
+    if (!target) return target;
+    if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(target) || target.startsWith('//')) {
+      return target;
     }
-
-    function injectOverlay() {
-      const container = document.getElementById('conscious-orb-container');
-      if (!container) return null;
-      if (container.querySelector('#voice-orb')) {
-        return null;
-      }
-
-      const overlay = document.createElement('div');
-      overlay.className = 'voice-overlay';
-      overlay.setAttribute('role', 'presentation');
-
-      const orbButton = document.createElement('button');
-      orbButton.type = 'button';
-      orbButton.id = 'voice-orb';
-      orbButton.className = 'orb orb--idle';
-      orbButton.setAttribute('aria-pressed', 'false');
-      orbButton.setAttribute('aria-label', 'Press to talk with Silent');
-
-      const srText = document.createElement('span');
-      srText.className = 'sr-only';
-      srText.textContent = 'Press to talk with Silent';
-      orbButton.appendChild(srText);
-
-      const core = document.createElement('span');
-      core.className = 'orb-core';
-      orbButton.appendChild(core);
-
-      const halo = document.createElement('span');
-      halo.className = 'orb-halo';
-      orbButton.appendChild(halo);
-
-      const vu = document.createElement('span');
-      vu.className = 'orb-vu';
-      orbButton.appendChild(vu);
-
-      overlay.appendChild(orbButton);
-
-      const status = document.createElement('div');
-      status.className = 'voice-status';
-      status.setAttribute('role', 'status');
-      status.setAttribute('aria-live', 'polite');
-      const stateLabels = {
-        idle: 'Ready.',
-        listening: 'Listening…',
-        thinking: 'Thinking…',
-        speaking: 'Answering…',
-      };
-      Object.keys(stateLabels).forEach((state) => {
-        const span = document.createElement('span');
-        span.setAttribute('data-state', state);
-        span.textContent = stateLabels[state];
-        if (state !== 'idle') {
-          span.hidden = true;
-        }
-        status.appendChild(span);
-      });
-      overlay.appendChild(status);
-
-      const transcript = document.createElement('div');
-      transcript.className = 'voice-transcript';
-      transcript.setAttribute('aria-live', 'polite');
-      transcript.setAttribute('aria-atomic', 'true');
-      overlay.appendChild(transcript);
-
-      const log = document.createElement('div');
-      log.className = 'voice-log';
-      log.hidden = true;
-      overlay.appendChild(log);
-
-      const consent = document.createElement('div');
-      consent.className = 'voice-consent';
-      consent.hidden = true;
-      consent.innerHTML = `
-        <p>We’ll use your microphone only while the orb is on. Nothing is sent until you speak.</p>
-        <button class="btn-primary" id="voice-consent-accept" type="button">OK</button>
-      `;
-      overlay.appendChild(consent);
-
-      container.appendChild(overlay);
-
-      return {
-        orb: orbButton,
-        statusEls: status.querySelectorAll('[data-state]'),
-        transcriptEl: transcript,
-        logEl: log,
-        consentEl: consent,
-        consentBtn: consent.querySelector('button'),
-      };
+    const cleanTarget = target.replace(/^\/+/, '');
+    if (basePath === '.' || basePath === '') {
+      return cleanTarget.startsWith('./') || cleanTarget.startsWith('../') ? cleanTarget : `./${cleanTarget}`;
     }
+    return `${basePath}/${cleanTarget}`.replace(/\/{2,}/g, '/');
+  }
 
-    function ensureVoiceStyles(href) {
-      if (!href) return;
-      const head = document.head;
-      if (!head) return;
-      const absoluteHref = new URL(href, document.baseURI).href;
-      const existing = head.querySelectorAll('link[rel="stylesheet"]');
-      for (let i = 0; i < existing.length; i += 1) {
-        if (existing[i].href === absoluteHref) {
-          return;
-        }
-      }
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = href;
-      link.setAttribute('data-voice-overlay', 'true');
-      head.appendChild(link);
+  function getSessionId(storage, crypto) {
+    if (!storage) return null;
+    const existing = storage.getItem('silent-session-id');
+    if (existing) {
+      return existing;
     }
-  });
-})();
+    if (crypto && typeof crypto.randomUUID === 'function') {
+      const id = crypto.randomUUID();
+      storage.setItem('silent-session-id', id);
+      return id;
+    }
+    const fallback = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    storage.setItem('silent-session-id', fallback);
+    return fallback;
+  }
+
+  global.initVoiceOverlay = initVoiceOverlay;
+})(window);
