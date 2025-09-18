@@ -1,6 +1,8 @@
 (function () {
   'use strict';
 
+  const diagState = (window.__SILENT_DIAG__ = window.__SILENT_DIAG__ || {});
+
   const DEFAULT_CONFIG = {
     site: {
       basePath: '.',
@@ -213,31 +215,112 @@
     promise: null,
   };
 
+  function ensureDiagProducts() {
+    if (!diagState.productsFetch) {
+      diagState.productsFetch = { attempts: [], success: null, error: null };
+    }
+    return diagState.productsFetch;
+  }
+
+  function ensureTrailingSlash(value) {
+    if (!value) return '';
+    return value.endsWith('/') ? value : `${value}/`;
+  }
+
+  function buildProductDataUrls() {
+    const urls = [];
+    const configBase = window.SILENT_CONFIG?.site?.baseUrl;
+    if (typeof configBase === 'string' && configBase.length) {
+      try {
+        urls.push(new URL('data/products.json', ensureTrailingSlash(configBase)).toString());
+      } catch (error) {
+        /* ignore invalid base */
+      }
+    }
+
+    const script = document.querySelector('script[src*="assets/js/main.js"]');
+    if (script && script.getAttribute('src')) {
+      try {
+        const scriptUrl = new URL(script.getAttribute('src'), window.location.href);
+        scriptUrl.search = '';
+        scriptUrl.hash = '';
+        scriptUrl.pathname = scriptUrl.pathname.replace(/assets\/js\/[^/]*$/, '');
+        urls.push(new URL('data/products.json', scriptUrl.href).toString());
+      } catch (error) {
+        /* ignore */
+      }
+    }
+
+    const canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical && canonical.href) {
+      try {
+        urls.push(new URL('data/products.json', canonical.href).toString());
+      } catch (error) {
+        /* ignore */
+      }
+    }
+
+    try {
+      urls.push(new URL('data/products.json', window.location.href).toString());
+    } catch (error) {
+      /* ignore */
+    }
+
+    try {
+      urls.push(new URL('../data/products.json', window.location.href).toString());
+    } catch (error) {
+      /* ignore */
+    }
+
+    const seen = new Set();
+    return urls.filter((item) => {
+      if (!item || seen.has(item)) return false;
+      seen.add(item);
+      return true;
+    });
+  }
+
   function fetchProducts() {
     if (productCache.data) return Promise.resolve(productCache.data);
     if (productCache.promise) return productCache.promise;
-    const url = resolvePath('data/products.json');
-    productCache.promise = fetch(url, {
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Failed to load product data');
+
+    productCache.promise = (async () => {
+      const diag = ensureDiagProducts();
+      diag.attempts = [];
+      diag.success = null;
+      diag.error = null;
+
+      const urls = buildProductDataUrls();
+      let lastError = null;
+
+      for (const url of urls) {
+        try {
+          const response = await fetch(url, { cache: 'no-store' });
+          diag.attempts.push({ url, status: response.status });
+          if (!response.ok) {
+            lastError = new Error(`Failed to load product data (${response.status})`);
+            continue;
+          }
+          const json = await response.json();
+          const items = Array.isArray(json.products) ? json.products : [];
+          diag.success = { url, status: response.status, count: items.length };
+          productCache.data = items;
+          return items;
+        } catch (error) {
+          diag.attempts.push({ url, error: error.message });
+          lastError = error;
         }
-        return response.json();
-      })
-      .then((json) => {
-        productCache.data = json.products || [];
-        return productCache.data;
-      })
+      }
+
+      diag.error = lastError ? lastError.message : 'Failed to load product data';
+      throw lastError || new Error('Failed to load product data');
+    })()
       .catch((error) => {
-        console.error(error);
         productCache.promise = null;
+        console.error(error);
         throw error;
       });
+
     return productCache.promise;
   }
 
@@ -355,9 +438,15 @@
           });
         }
       })
-      .catch(() => {
+      .catch((error) => {
         if (listEl) {
-          listEl.innerHTML = '<p>Products are loading. Please refresh if this persists.</p>';
+          listEl.innerHTML = '';
+          const message =
+            window.__SILENT_DIAG__?.productsFetch?.error || error?.message ||
+            'Products are loading. Please refresh if this persists.';
+          const paragraph = document.createElement('p');
+          paragraph.textContent = message;
+          listEl.appendChild(paragraph);
         }
       });
   }
