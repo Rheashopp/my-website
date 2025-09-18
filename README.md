@@ -1,23 +1,20 @@
-# Silent — Super Intelligence
+# Silent — Super Intelligence Marketing Site
 
-Future-forward marketing site for Silent, a responsible super intelligence platform. The site is built with plain HTML, CSS, and vanilla JavaScript so it can be deployed anywhere static hosting is supported (including GitHub Pages, Netlify, or Cloudflare Pages).
+This repository powers the static marketing site for the Silent super intelligence platform. The site is GitHub Pages compatible and deploys at `https://rheashopp.github.io/my-website/` using only vanilla HTML, CSS, and JavaScript.
 
-![Voice orb demo](assets/img/voice/voice-orb-demo.svg)
+## Highlights
 
-## Features
-
-- **Glowing hero voice orb** with press-to-talk controls, Web Speech API demo mode, and keyboard support.
-- **Mobile-responsive layout** with glassy accents, sticky navigation, and accessible focus states.
-- **Products catalog** sourced from `data/products.json` with search, tag filters, and detail pages hydrated from the JSON.
-- **SEO-ready pages** including canonical links, social cards, sitemap, robots file, and Organization/Product JSON-LD.
-- **Contact form** wired to Formspree with inline validation, success/error messaging, and accessibility semantics.
-- **Serverless LLM proxies** for Netlify Functions and Cloudflare Workers so API keys remain server-side.
+- **Products catalog** sourced from `data/products.json` with search, tag filters, and JSON-driven detail pages.
+- **Research, about, chat, privacy, and terms pages** that follow the shared navigation shell without touching the homepage markup.
+- **Contact form** wired to Formspree with inline validation and helper messaging.
+- **Optional voice overlay** that can be enabled via `window.SILENT_CONFIG.voice` without editing `index.html`.
+- **Serverless proxies** for Netlify Functions and Cloudflare Workers so `/api/llm` calls stay keyless in the browser.
 
 ## Project structure
 
 ```
 /
-├─ index.html
+├─ index.html (homepage — read only)
 ├─ about.html
 ├─ chat.html
 ├─ contact.html
@@ -30,136 +27,75 @@ Future-forward marketing site for Silent, a responsible super intelligence platf
 │  ├─ si-helix.html
 │  └─ si-aegis.html
 ├─ assets/
-│  ├─ css/style.css
+│  ├─ css/style.css (homepage styles — read only)
 │  ├─ css/voice.css
 │  ├─ js/main.js
 │  ├─ js/voice.js
-│  ├─ js/vendor/webaudio-viz.js
-│  ├─ img/
-│  └─ icons/
+│  └─ js/vendor/webaudio-viz.js
 ├─ data/products.json
 ├─ serverless/
 │  ├─ netlify/functions/llm.js
 │  ├─ cloudflare/worker.js
 │  └─ README.md
-├─ sitemap.xml
+├─ netlify.toml
 ├─ robots.txt
-└─ 404.html
+└─ sitemap.xml
 ```
 
-## Local development
+## Base path configuration
 
-1. Launch a static server from the project root:
-
-   ```bash
-   python -m http.server 8000
-   ```
-
-2. Visit `http://localhost:8000/index.html` in your browser.
-
-### Base path configuration
-
-If you deploy the site to a subdirectory (e.g., GitHub Pages at `/my-website`), set the base path once before the closing `</head>` on each page or in a small inline script:
+GitHub Pages serves the site at `/my-website/`. Internal links and asset requests remain relative, but you can optionally set `window.SILENT_CONFIG.site` to help `main.js` rewrite links when embedding pages elsewhere:
 
 ```html
 <script>
-  window.SILENT_CONFIG = {
-    site: {
-      basePath: '/my-website',
-      baseUrl: 'https://rheashopp.github.io/my-website'
-    }
+  window.SILENT_CONFIG = window.SILENT_CONFIG || {};
+  window.SILENT_CONFIG.site = {
+    basePath: '.',
+    baseUrl: 'https://rheashopp.github.io/my-website'
   };
 </script>
 ```
-
-`main.js` automatically rewrites internal links when `basePath` is defined.
 
 ## Editing products
 
-Product metadata lives in `data/products.json`. Each product requires:
+Product metadata lives in `data/products.json`. Each object includes:
 
-- `slug` — used for the detail page filename (`products/<slug>.html`).
-- `name`, `tagline`, `summary`, `heroImage` — hero card content.
-- `category` — array of tags used for catalog filtering.
-- `whatItDoes`, `howItWorks`, `features` — arrays rendered into detail lists.
-- `specs` — key/value map rendered into a specs table.
-- `faq` — array of `{ "q": "...", "a": "..." }` entries.
+- `slug` — used for filenames under `products/`.
+- `name`, `tagline`, `summary`, `heroImage`.
+- `category` — array of focus tags for filtering.
+- `whatItDoes`, `howItWorks`, `features` — arrays rendered into lists.
+- `specs` — key/value map displayed in a specs table.
+- `faq` — array of `{ "q": "...", "a": "..." }` items.
 
-Update the JSON and the catalog/detail pages will hydrate automatically on load.
+Updating the JSON automatically refreshes the catalog grid and product detail pages on load.
 
 ## Contact form
 
-Replace the placeholder Formspree endpoint in `contact.html`:
+The contact form posts to a Formspree placeholder endpoint: `https://formspree.io/f/YOUR_FORMSPREE_ID`. Replace `YOUR_FORMSPREE_ID` with your project ID in `contact.html` to receive submissions.
 
-```html
-<form action="https://formspree.io/f/YOUR_FORMSPREE_ID" ...>
-```
+## Voice overlay
 
-After updating the endpoint, submissions will be sent directly to your Formspree inbox.
-
-## Voice orb configuration
-
-The global `window.SILENT_CONFIG.voice` object (set in `assets/js/main.js`) controls the voice experience:
-
-- `provider`: `demo` (default), `openai`, or `gemini`.
-- `ttsVoiceName`: optional speech synthesis voice name.
-
-Example override:
+The voice orb overlay is off by default. To enable it on any page, append the following snippet near the end of the document (after including `assets/js/main.js`):
 
 ```html
 <script>
-  window.SILENT_CONFIG = {
-    site: { basePath: '', baseUrl: 'https://silent.superintelligence' },
-    voice: { provider: 'openai', ttsVoiceName: 'Samantha' }
-  };
+  window.SILENT_CONFIG = window.SILENT_CONFIG || {};
+  window.SILENT_CONFIG.voice = { enabled: true, provider: 'demo', ttsVoiceName: null };
 </script>
 ```
 
-When `provider` is `openai` or `gemini`, the browser posts to `/api/llm`, which should be routed to one of the serverless proxies below.
-
-## Assets
-
-- All imagery in this repository uses lightweight SVG placeholders so the PR stays text-only.
-- Raster social previews or product artwork can be added in a follow-up commit outside Codex once final designs are approved.
+When `provider` is set to `openai` or `gemini`, the overlay posts `{ messages: [...], sessionId }` to `/api/llm`. Keys must be supplied by one of the serverless proxies below. In browsers without speech-to-text support, the overlay automatically exposes a text fallback field.
 
 ## Serverless LLM proxies
 
-### Netlify Functions
+See `serverless/README.md` for full deployment steps. At a glance:
 
-- File: `serverless/netlify/functions/llm.js`
-- Environment variables: `PROVIDER` (`openai`|`gemini`), `OPENAI_API_KEY`, `OPENAI_MODEL`, `GEMINI_API_KEY`, `GEMINI_MODEL`.
-- Add a redirect in `netlify.toml`:
-
-  ```toml
-  [[redirects]]
-  from = "/api/llm"
-  to = "/.netlify/functions/llm"
-  status = 200
-  force = true
-  ```
-
-### Cloudflare Workers
-
-- File: `serverless/cloudflare/worker.js`
-- Configure secrets with `wrangler secret put OPENAI_API_KEY`, etc.
-- Add a route in `wrangler.toml` (example):
-
-  ```toml
-  routes = [
-    { pattern = "silent.superintelligence/api/llm", zone_name = "silent.superintelligence" }
-  ]
-  ```
-
-Both implementations enforce CORS, short timeouts, and never log raw prompts.
+- **Netlify Functions** — Deploy `serverless/netlify/functions/llm.js`, set `PROVIDER`, `OPENAI_API_KEY`, and/or `GEMINI_API_KEY`, and keep the included `netlify.toml` redirect. CORS is restricted to `https://rheashopp.github.io`.
+- **Cloudflare Workers** — Publish `serverless/cloudflare/worker.js` with the same environment variables via `wrangler`, then attach a route for `/api/llm`. CORS is also limited to `https://rheashopp.github.io`.
 
 ## Deployment checklist
 
-- Update canonical URLs in each HTML file if you deploy to a different domain.
-- Ensure `robots.txt` and `sitemap.xml` reference the production domain.
-- Replace the placeholder Formspree endpoint.
-- Set `window.SILENT_CONFIG.site.baseUrl` to your production URL for accurate metadata.
-- Configure a serverless proxy and set `window.SILENT_CONFIG.voice.provider` to `openai` or `gemini` once keys are available.
-
-## Credits
-
-Designed and built by the Silent team to highlight a calm, responsible approach to super intelligence.
+1. Confirm `robots.txt` references `https://rheashopp.github.io/my-website/sitemap.xml`.
+2. Verify `sitemap.xml` lists every page with the GitHub Pages base URL.
+3. Replace the Formspree placeholder ID when going live.
+4. If you mirror the site to another domain, update canonical URLs and `window.SILENT_CONFIG.site.baseUrl` accordingly.

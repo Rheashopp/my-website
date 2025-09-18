@@ -20,17 +20,17 @@ The `messages` array mirrors OpenAI/Gemini chat formats. `sessionId` is forwarde
   - `PROVIDER` — `openai` or `gemini` (defaults to `openai`)
   - `OPENAI_API_KEY` and optional `OPENAI_MODEL` (defaults to `gpt-4o-mini`)
   - `GEMINI_API_KEY` and optional `GEMINI_MODEL` (defaults to `gemini-2.5-flash`)
-- Add a redirect in `netlify.toml`:
+- Add a redirect in `netlify.toml` so `/api/*` points to the function:
 
   ```toml
   [[redirects]]
-  from = "/api/llm"
-  to = "/.netlify/functions/llm"
-  status = 200
-  force = true
+    from = "/api/*"
+    to = "/.netlify/functions/llm"
+    status = 200
   ```
 
-- Deploy with `netlify deploy` or the Netlify UI. Keys are configured under **Site settings → Environment variables**.
+- Deploy with `netlify deploy` or the Netlify UI. Configure env vars under **Site settings → Environment variables**.
+- The function only allows CORS requests from `https://rheashopp.github.io` to match the GitHub Pages deployment.
 
 ## Cloudflare Workers
 
@@ -46,11 +46,11 @@ The `messages` array mirrors OpenAI/Gemini chat formats. `sessionId` is forwarde
   main = "serverless/cloudflare/worker.js"
 
   routes = [
-    { pattern = "silent.superintelligence/api/llm", zone_name = "silent.superintelligence" }
+    { pattern = "rheashopp.github.io/api/llm", custom_domain = true }
   ]
   ```
 
-Cloudflare deploys with `wrangler publish`. Attach the same environment variables under **Workers → Settings → Variables**.
+Deploy with `wrangler publish` and attach the same environment variables under **Workers → Settings → Variables**. The worker also restricts CORS responses to `https://rheashopp.github.io`.
 
 ## CORS & security
 

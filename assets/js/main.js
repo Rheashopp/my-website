@@ -19,6 +19,13 @@
     voice: Object.assign({}, DEFAULT_CONFIG.voice, existingConfig.voice || {}),
   });
 
+  if (
+    !window.SILENT_CONFIG.site.baseUrl ||
+    window.SILENT_CONFIG.site.baseUrl === 'https://silent.superintelligence'
+  ) {
+    window.SILENT_CONFIG.site.baseUrl = 'https://rheashopp.github.io/my-website';
+  }
+
   function getBasePath() {
     const basePath = window.SILENT_CONFIG?.site?.basePath;
     if (typeof basePath !== 'string' || basePath.length === 0) {
@@ -503,4 +510,176 @@
   function isValidEmail(value) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
   }
+})();
+
+(function () {
+  'use strict';
+
+  if (window.__silentVoiceLoaderInitialized) {
+    return;
+  }
+  window.__silentVoiceLoaderInitialized = true;
+
+  function onReady(callback) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', callback, { once: true });
+    } else {
+      callback();
+    }
+  }
+
+  function getBasePath() {
+    var basePath = window.SILENT_CONFIG && window.SILENT_CONFIG.site && window.SILENT_CONFIG.site.basePath;
+    if (typeof basePath !== 'string' || basePath.length === 0) {
+      return '.';
+    }
+    var sanitized = basePath.replace(/\/+$/, '');
+    return sanitized.length ? sanitized : '.';
+  }
+
+  function resolveAsset(path) {
+    if (!path) return path;
+    if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(path) || path.startsWith('//')) {
+      return path;
+    }
+    var clean = path.replace(/^\/+/, '');
+    var basePath = getBasePath();
+    if (basePath === '.' || basePath === '') {
+      return clean.startsWith('./') || clean.startsWith('../') ? clean : './' + clean;
+    }
+    return (basePath + '/' + clean).replace(/\/{2,}/g, '/');
+  }
+
+  function ensureStylesheet(href) {
+    if (!href) return;
+    var absoluteHref;
+    try {
+      absoluteHref = new URL(href, document.baseURI).href;
+    } catch (error) {
+      absoluteHref = href;
+    }
+    var existing = Array.from(document.styleSheets || []).some(function (sheet) {
+      return sheet.href === absoluteHref;
+    });
+    if (existing) return;
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href;
+    document.head.appendChild(link);
+  }
+
+  function loadScript(src) {
+    return new Promise(function (resolve, reject) {
+      if (!src) {
+        resolve();
+        return;
+      }
+      var existing = document.querySelector('script[data-dynamic-src="' + src + '"]');
+      if (existing) {
+        if (existing.hasAttribute('data-loaded')) {
+          resolve();
+        } else {
+          existing.addEventListener('load', function () {
+            resolve();
+          });
+          existing.addEventListener('error', function (error) {
+            reject(error);
+          });
+        }
+        return;
+      }
+      var script = document.createElement('script');
+      script.src = src;
+      script.defer = true;
+      script.setAttribute('data-dynamic-src', src);
+      script.addEventListener('load', function () {
+        script.setAttribute('data-loaded', 'true');
+        resolve();
+      });
+      script.addEventListener('error', reject);
+      document.head.appendChild(script);
+    });
+  }
+
+  function injectHomeSchema() {
+    if (document.getElementById('silent-home-org-schema')) {
+      return;
+    }
+    var orb = document.getElementById('conscious-orb-container');
+    if (!orb) {
+      return;
+    }
+    var baseUrl = window.SILENT_CONFIG && window.SILENT_CONFIG.site && window.SILENT_CONFIG.site.baseUrl;
+    if (typeof baseUrl !== 'string' || !baseUrl.length) {
+      baseUrl = 'https://rheashopp.github.io/my-website';
+    }
+    var orgSchema = document.createElement('script');
+    orgSchema.type = 'application/ld+json';
+    orgSchema.id = 'silent-home-org-schema';
+    orgSchema.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: 'Silent',
+      url: baseUrl.replace(/\/$/, ''),
+      logo: baseUrl.replace(/\/$/, '') + '/assets/img/og-cover.svg',
+      sameAs: ['https://x.com/silent', 'https://www.linkedin.com/company/silent-superintelligence']
+    });
+    document.head.appendChild(orgSchema);
+
+    var siteSchema = document.createElement('script');
+    siteSchema.type = 'application/ld+json';
+    siteSchema.id = 'silent-home-site-schema';
+    siteSchema.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      url: baseUrl.replace(/\/$/, '') + '/',
+      name: document.title || 'Silent — Super Intelligence',
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: baseUrl.replace(/\/$/, '') + '/products/index.html?query={search_term_string}',
+        'query-input': 'required name=search_term_string'
+      }
+    });
+    document.head.appendChild(siteSchema);
+  }
+
+  function mountVoiceOverlay() {
+    var voiceConfig = window.SILENT_CONFIG && window.SILENT_CONFIG.voice;
+    if (!voiceConfig || voiceConfig.enabled !== true) {
+      return;
+    }
+    if (window.__silentVoiceOverlayMounted) {
+      return;
+    }
+    var anchor = document.getElementById('conscious-orb-container') ||
+      document.querySelector('[data-voice-anchor]') ||
+      document.querySelector('[data-hero]') ||
+      document.body;
+
+    ensureStylesheet(resolveAsset('assets/css/voice.css'));
+
+    var scripts = [resolveAsset('assets/js/vendor/webaudio-viz.js'), resolveAsset('assets/js/voice.js')];
+
+    scripts.reduce(function (promise, src) {
+      return promise.then(function () {
+        return loadScript(src);
+      });
+    }, Promise.resolve()).then(function () {
+      if (typeof window.initVoiceOverlay === 'function') {
+        window.__silentVoiceOverlayMounted = true;
+        window.initVoiceOverlay(anchor, voiceConfig);
+      }
+    }).catch(function (error) {
+      console.error('Voice overlay loader error', error);
+    });
+  }
+
+  onReady(function () {
+    try {
+      injectHomeSchema();
+    } catch (error) {
+      console.warn('Schema injection error', error);
+    }
+    mountVoiceOverlay();
+  });
 })();
