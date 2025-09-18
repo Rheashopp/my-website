@@ -195,17 +195,18 @@
   }
 
   function initSmoothScroll() {
-    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+    document.querySelectorAll('a[href]').forEach((anchor) => {
       anchor.addEventListener('click', (event) => {
-        const targetId = anchor.getAttribute('href');
-        if (!targetId || targetId.length <= 1) return;
-        const target = document.querySelector(targetId);
-        if (target) {
-          event.preventDefault();
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          history.replaceState(null, '', targetId);
-          target.focus({ preventScroll: true });
-        }
+        const href = anchor.getAttribute('href') || '';
+        const isSamePageHash = href.startsWith('#');
+        if (!isSamePageHash) return;
+        if (href.length <= 1) return;
+        const target = document.querySelector(href);
+        if (!target) return;
+        event.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        history.replaceState(null, '', href);
+        target.focus({ preventScroll: true });
       });
     });
   }
@@ -222,102 +223,48 @@
     return diagState.productsFetch;
   }
 
-  function ensureTrailingSlash(value) {
-    if (!value) return '';
-    return value.endsWith('/') ? value : `${value}/`;
-  }
-
-  function buildProductDataUrls() {
-    const urls = [];
-    const configBase = window.SILENT_CONFIG?.site?.baseUrl;
-    if (typeof configBase === 'string' && configBase.length) {
-      try {
-        urls.push(new URL('data/products.json', ensureTrailingSlash(configBase)).toString());
-      } catch (error) {
-        /* ignore invalid base */
-      }
+  function buildProductDataUrl() {
+    const url = new URL('data/products.json', window.location.href);
+    url.search = '';
+    url.hash = '';
+    let normalized = url.pathname.replace(/\/+/g, '/');
+    while (normalized.includes('/products/data/')) {
+      normalized = normalized.replace('/products/data/', '/data/');
     }
-
-    const script = document.querySelector('script[src*="assets/js/main.js"]');
-    if (script && script.getAttribute('src')) {
-      try {
-        const scriptUrl = new URL(script.getAttribute('src'), window.location.href);
-        scriptUrl.search = '';
-        scriptUrl.hash = '';
-        scriptUrl.pathname = scriptUrl.pathname.replace(/assets\/js\/[^/]*$/, '');
-        urls.push(new URL('data/products.json', scriptUrl.href).toString());
-      } catch (error) {
-        /* ignore */
-      }
-    }
-
-    const canonical = document.querySelector('link[rel="canonical"]');
-    if (canonical && canonical.href) {
-      try {
-        urls.push(new URL('data/products.json', canonical.href).toString());
-      } catch (error) {
-        /* ignore */
-      }
-    }
-
-    try {
-      urls.push(new URL('data/products.json', window.location.href).toString());
-    } catch (error) {
-      /* ignore */
-    }
-
-    try {
-      urls.push(new URL('../data/products.json', window.location.href).toString());
-    } catch (error) {
-      /* ignore */
-    }
-
-    const seen = new Set();
-    return urls.filter((item) => {
-      if (!item || seen.has(item)) return false;
-      seen.add(item);
-      return true;
-    });
+    url.pathname = normalized;
+    return url.toString();
   }
 
   function fetchProducts() {
     if (productCache.data) return Promise.resolve(productCache.data);
     if (productCache.promise) return productCache.promise;
 
-    productCache.promise = (async () => {
-      const diag = ensureDiagProducts();
-      diag.attempts = [];
-      diag.success = null;
-      diag.error = null;
+    const url = buildProductDataUrl();
+    const diag = ensureDiagProducts();
+    diag.attempts = [];
+    diag.success = null;
+    diag.error = null;
 
-      const urls = buildProductDataUrls();
-      let lastError = null;
-
-      for (const url of urls) {
-        try {
-          const response = await fetch(url, { cache: 'no-store' });
-          diag.attempts.push({ url, status: response.status });
-          if (!response.ok) {
-            lastError = new Error(`Failed to load product data (${response.status})`);
-            continue;
-          }
-          const json = await response.json();
-          const items = Array.isArray(json.products) ? json.products : [];
-          diag.success = { url, status: response.status, count: items.length };
-          productCache.data = items;
-          return items;
-        } catch (error) {
-          diag.attempts.push({ url, error: error.message });
-          lastError = error;
+    productCache.promise = fetch(url, { cache: 'no-store' })
+      .then((response) => {
+        diag.attempts.push({ url, status: response.status });
+        if (!response.ok) {
+          const error = new Error(`Failed to load product data (${response.status})`);
+          console.error('[products] request failed', { url, status: response.status });
+          throw error;
         }
-      }
-
-      diag.error = lastError ? lastError.message : 'Failed to load product data';
-      throw lastError || new Error('Failed to load product data');
-    })()
+        return response.json();
+      })
+      .then((json) => {
+        const items = Array.isArray(json.products) ? json.products : [];
+        diag.success = { url, count: items.length };
+        productCache.data = items;
+        return items;
+      })
       .catch((error) => {
         productCache.promise = null;
-        console.error(error);
+        diag.error = error && error.message ? error.message : String(error);
+        console.error('[products] unable to load product data', { url, error: diag.error });
         throw error;
       });
 
@@ -332,22 +279,13 @@
     const filtersEl = catalogEl.querySelector('[data-product-filters]');
     const ctaEl = catalogEl.querySelector('[data-request-access]');
 
-    const storedFilters = localStorage.getItem('silent-product-filters');
-    let activeTags = [];
+    let activeTags = new Set();
     let searchTerm = '';
-    if (storedFilters) {
-      try {
-        const parsed = JSON.parse(storedFilters);
-        activeTags = parsed.tags || [];
-        searchTerm = parsed.search || '';
-        if (searchEl) searchEl.value = searchTerm;
-      } catch (error) {
-        console.warn('Failed to parse filters', error);
-      }
-    }
+    let allProducts = [];
 
     fetchProducts()
       .then((products) => {
+        allProducts = products;
         const tags = Array.from(new Set(products.flatMap((product) => product.category || []))).sort();
         if (filtersEl) {
           filtersEl.innerHTML = '';
@@ -355,100 +293,91 @@
             const button = document.createElement('button');
             button.type = 'button';
             button.textContent = tag;
-            button.setAttribute('aria-pressed', activeTags.includes(tag) ? 'true' : 'false');
+            button.setAttribute('aria-pressed', 'false');
             button.addEventListener('click', () => {
-              const isActive = button.getAttribute('aria-pressed') === 'true';
-              if (isActive) {
-                activeTags = activeTags.filter((item) => item !== tag);
+              if (activeTags.has(tag)) {
+                activeTags.delete(tag);
                 button.setAttribute('aria-pressed', 'false');
               } else {
-                activeTags.push(tag);
+                activeTags.add(tag);
                 button.setAttribute('aria-pressed', 'true');
               }
-              persistFilters();
-              render(products);
+              render();
             });
             filtersEl.appendChild(button);
           });
         }
-        render(products);
 
         if (searchEl) {
+          searchEl.value = '';
           searchEl.addEventListener('input', () => {
             searchTerm = searchEl.value.trim();
-            persistFilters();
-            render(products);
+            render();
           });
         }
 
         if (ctaEl) {
           ctaEl.addEventListener('click', () => {
-            localStorage.setItem(
+            sessionStorage.setItem(
               'silent-product-filters',
-              JSON.stringify({ tags: activeTags, search: searchTerm })
+              JSON.stringify({ tags: Array.from(activeTags), search: searchTerm })
             );
           });
         }
 
-        function persistFilters() {
-          localStorage.setItem(
-            'silent-product-filters',
-            JSON.stringify({ tags: activeTags, search: searchTerm })
-          );
-        }
-
-        function render(items) {
-          if (!listEl) return;
-          listEl.innerHTML = '';
-          const filtered = items.filter((product) => {
-            const matchesSearch = searchTerm
-              ? product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                product.summary.toLowerCase().includes(searchTerm.toLowerCase())
-              : true;
-            const matchesTags = activeTags.length
-              ? activeTags.every((tag) => (product.category || []).includes(tag))
-              : true;
-            return matchesSearch && matchesTags;
-          });
-
-          if (!filtered.length) {
-            const empty = document.createElement('p');
-            empty.textContent = 'No products match your filters yet. Adjust the filters or request a briefing.';
-            listEl.appendChild(empty);
-            return;
-          }
-
-          filtered.forEach((product) => {
-            const article = document.createElement('article');
-            article.className = 'card';
-            article.innerHTML = `
-              <div class="badge-list">
-                ${(product.category || [])
-                  .map((tag) => `<span class="badge">${tag}</span>`)
-                  .join('')}
-              </div>
-              <h3>${product.name}</h3>
-              <p>${product.summary}</p>
-              <a class="link-arrow" href="${resolvePath('products/' + product.slug + '.html')}">
-                Explore ${product.name}
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h12m0 0l-4-4m4 4l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
-              </a>
-            `;
-            listEl.appendChild(article);
-          });
-        }
+        render();
       })
-      .catch((error) => {
-        if (listEl) {
-          listEl.innerHTML = '';
-          const message =
-            window.__SILENT_DIAG__?.productsFetch?.error || error?.message ||
-            'Products are loading. Please refresh if this persists.';
-          const paragraph = document.createElement('p');
-          paragraph.textContent = message;
-          listEl.appendChild(paragraph);
-        }
+      .catch(() => {
+        if (!listEl) return;
+        listEl.innerHTML = '';
+        const message = document.createElement('p');
+        message.textContent = 'Products are temporarily unavailable. Please try again soon.';
+        listEl.appendChild(message);
       });
+
+    function render() {
+      if (!listEl) return;
+      listEl.innerHTML = '';
+      const searchLower = searchTerm.toLowerCase();
+      const tags = Array.from(activeTags);
+
+      const filtered = allProducts.filter((product) => {
+        const matchesSearch = searchLower
+          ? (product.name || '').toLowerCase().includes(searchLower) ||
+            (product.summary || '').toLowerCase().includes(searchLower)
+          : true;
+        const matchesTags = tags.length
+          ? tags.every((tag) => (product.category || []).includes(tag))
+          : true;
+        return matchesSearch && matchesTags;
+      });
+
+      if (!filtered.length) {
+        const empty = document.createElement('p');
+        empty.textContent = 'No products match your filters yet. Adjust the filters or request a briefing.';
+        listEl.appendChild(empty);
+        return;
+      }
+
+      filtered.forEach((product) => {
+        const article = document.createElement('article');
+        article.className = 'card';
+        article.innerHTML = `
+          <div class="badge-list">
+            ${(product.category || [])
+              .map((tag) => `<span class="badge">${tag}</span>`)
+              .join('')}
+          </div>
+          <h3>${product.name}</h3>
+          <p>${product.summary}</p>
+          <a class="link-arrow" href="${resolvePath('products/' + product.slug + '.html')}">
+            Explore ${product.name}
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h12m0 0l-4-4m4 4l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </a>
+        `;
+        listEl.appendChild(article);
+      });
+    }
   }
 
   function initProductDetail() {
@@ -900,4 +829,44 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     mountVoiceOverlay();
   });
+})();
+
+(() => {
+  function normalizePath(value) {
+    if (!value) return null;
+    try {
+      const url = new URL(value, window.location.href);
+      let pathname = url.pathname.replace(/\/+/g, '/');
+      if (pathname.endsWith('/') && pathname.length > 1) {
+        pathname = pathname.slice(0, -1);
+      }
+      return pathname;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function applyAriaCurrent() {
+    const currentPath = normalizePath(window.location.pathname);
+    if (!currentPath || currentPath === '/' || currentPath.endsWith('/index.html')) {
+      return;
+    }
+    const links = document.querySelectorAll('nav a[href]');
+    if (!links.length) return;
+    links.forEach((link) => {
+      const linkPath = normalizePath(link.getAttribute('href'));
+      if (!linkPath) return;
+      if (linkPath === currentPath) {
+        link.setAttribute('aria-current', 'page');
+      } else if (link.hasAttribute('aria-current')) {
+        link.removeAttribute('aria-current');
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', applyAriaCurrent, { once: true });
+  } else {
+    applyAriaCurrent();
+  }
 })();
