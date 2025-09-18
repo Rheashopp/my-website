@@ -69,6 +69,12 @@ Product metadata lives in `data/products.json`. Each object includes:
 
 Updating the JSON automatically refreshes the catalog grid and product detail pages on load.
 
+To add a new product end-to-end:
+
+1. Duplicate one of the existing `products/si-*.html` files, rename it to match the new `slug`, and update the `<title>`, `<meta>` tags, and the `data-product-detail` attribute to the same slug.
+2. Add a new object to `data/products.json` with that slug and all copy blocks populated (categories, lists, specs, and FAQ entries). The JS loader hydrates the new detail page automatically based on this data.
+3. (Optional) Add an inline SVG hero illustration under `assets/img/` and point the JSON `heroImage` field at it.
+
 ## Contact form
 
 The contact form posts to a Formspree placeholder endpoint: `https://formspree.io/f/YOUR_FORMSPREE_ID`. Replace `YOUR_FORMSPREE_ID` with your project ID in `contact.html` to receive submissions.

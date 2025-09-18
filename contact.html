@@ -9,40 +9,25 @@
   <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml" />
   <meta property="og:title" content="Contact Silent" />
   <meta property="og:description" content="Request access to Silent and collaborate on responsible super intelligence deployments." />
-  <meta property="og:image" content="https://rheashopp.github.io/my-website/assets/img/og-cover.svg" />
+  <meta property="og:image" content="assets/img/og-cover.svg" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://rheashopp.github.io/my-website/contact.html" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Contact Silent" />
   <meta name="twitter:description" content="Share your goals and request access to Silent." />
-  <meta name="twitter:image" content="https://rheashopp.github.io/my-website/assets/img/og-cover.svg" />
+  <meta name="twitter:image" content="assets/img/og-cover.svg" />
   <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body data-page="contact">
   <a class="skip-link" href="#main-content">Skip to content</a>
-  <header class="site-header">
-    <div class="container nav-container">
-      <a class="brand" data-href="index.html" href="index.html"><span class="brand-mark" aria-hidden="true"></span>Silent — Super Intelligence</a>
-      <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="primary-nav">Menu</button>
-      <nav id="primary-nav" class="primary-nav" data-open="false">
-        <ul>
-          <li><a data-nav="home" data-href="index.html" href="index.html">Home</a></li>
-          <li><a data-nav="products" data-href="products/index.html" href="products/index.html">Product</a></li>
-          <li><a data-nav="research" data-href="research.html" href="research.html">Research</a></li>
-          <li><a data-nav="chat" data-href="chat.html" href="chat.html">Chat</a></li>
-          <li><a data-nav="about" data-href="about.html" href="about.html">About</a></li>
-          <li><a data-nav="contact" data-href="contact.html" href="contact.html">Contact</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
+  <div data-layout-nav></div>
   <main id="main-content">
     <section class="section">
       <div class="container">
         <h1>Request Access</h1>
         <p>Tell us about your goals. We’re admitting a small early cohort that values safety, reliability, and measurable outcomes.</p>
         <form class="contact-form" action="https://formspree.io/f/YOUR_FORMSPREE_ID" method="POST" novalidate data-contact-form>
-          <div class="grid" style="display:grid;gap:1.5rem;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));">
+          <div class="layout-grid">
             <div class="input-group">
               <label for="contact-name">Name</label>
               <input id="contact-name" name="name" type="text" autocomplete="name" data-required="true" aria-describedby="contact-name-error" />
@@ -54,7 +39,7 @@
               <span class="error-text" id="contact-organization-error" aria-live="polite"></span>
             </div>
           </div>
-          <div class="grid" style="display:grid;gap:1.5rem;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));margin-top:1.5rem;">
+          <div class="layout-grid mt-6">
             <div class="input-group">
               <label for="contact-email">Work email</label>
               <input id="contact-email" name="email" type="email" autocomplete="email" data-required="true" aria-describedby="contact-email-error" />
@@ -66,12 +51,12 @@
               <span class="error-text" id="contact-role-error" aria-live="polite"></span>
             </div>
           </div>
-          <div class="input-group" style="margin-top:1.5rem;">
+          <div class="input-group mt-6">
             <label for="contact-intent">Intended use</label>
             <textarea id="contact-intent" name="intended_use" data-required="true" aria-describedby="contact-intent-error"></textarea>
             <span class="error-text" id="contact-intent-error" aria-live="polite"></span>
           </div>
-          <div class="checkbox" style="margin-top:1.5rem;">
+          <div class="checkbox mt-6">
             <input id="contact-consent" name="consent" type="checkbox" data-required="true" aria-describedby="contact-consent-error" />
             <label for="contact-consent">I agree to the <a href="privacy.html">Privacy Policy</a> and <a href="terms.html">Terms of Use</a>.</label>
           </div>
@@ -85,22 +70,8 @@
       </div>
     </section>
   </main>
-  <footer>
-    <div class="container footer-grid">
-      <p>© <span id="year"></span> Silent. All rights reserved.</p>
-      <div class="footer-links">
-        <a href="privacy.html">Privacy</a>
-        <a href="terms.html">Terms</a>
-        <a data-href="research.html" href="research.html">Research</a>
-        <a data-href="contact.html" href="contact.html">Contact</a>
-        <a href="https://x.com/silent" aria-label="Silent on X (placeholder)">X</a>
-        <a href="https://www.linkedin.com/company/silent-superintelligence" aria-label="Silent on LinkedIn (placeholder)">LinkedIn</a>
-      </div>
-    </div>
-  </footer>
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
+  <div data-layout-footer></div>
+  <script src="assets/js/layout.js" defer></script>
   <script src="assets/js/main.js" defer></script>
 </body>
 </html>
