@@ -9,33 +9,18 @@
   <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml" />
   <meta property="og:title" content="Silent Terms of Use" />
   <meta property="og:description" content="Terms governing Silent’s super intelligence platform and early access." />
-  <meta property="og:image" content="https://rheashopp.github.io/my-website/assets/img/og-cover.svg" />
+  <meta property="og:image" content="assets/img/og-cover.svg" />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="https://rheashopp.github.io/my-website/terms.html" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Silent Terms of Use" />
   <meta name="twitter:description" content="Understand the responsibilities and commitments for using Silent." />
-  <meta name="twitter:image" content="https://rheashopp.github.io/my-website/assets/img/og-cover.svg" />
+  <meta name="twitter:image" content="assets/img/og-cover.svg" />
   <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body data-page="terms">
   <a class="skip-link" href="#main-content">Skip to content</a>
-  <header class="site-header">
-    <div class="container nav-container">
-      <a class="brand" data-href="index.html" href="index.html"><span class="brand-mark" aria-hidden="true"></span>Silent — Super Intelligence</a>
-      <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="primary-nav">Menu</button>
-      <nav id="primary-nav" class="primary-nav" data-open="false">
-        <ul>
-          <li><a data-nav="home" data-href="index.html" href="index.html">Home</a></li>
-          <li><a data-nav="products" data-href="products/index.html" href="products/index.html">Product</a></li>
-          <li><a data-nav="research" data-href="research.html" href="research.html">Research</a></li>
-          <li><a data-nav="chat" data-href="chat.html" href="chat.html">Chat</a></li>
-          <li><a data-nav="about" data-href="about.html" href="about.html">About</a></li>
-          <li><a data-nav="contact" data-href="contact.html" href="contact.html">Contact</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
+  <div data-layout-nav></div>
   <main id="main-content">
     <section class="section">
       <div class="container">
@@ -57,22 +42,8 @@
       </div>
     </section>
   </main>
-  <footer>
-    <div class="container footer-grid">
-      <p>© <span id="year"></span> Silent. All rights reserved.</p>
-      <div class="footer-links">
-        <a href="privacy.html">Privacy</a>
-        <a href="terms.html">Terms</a>
-        <a data-href="research.html" href="research.html">Research</a>
-        <a data-href="contact.html" href="contact.html">Contact</a>
-        <a href="https://x.com/silent" aria-label="Silent on X (placeholder)">X</a>
-        <a href="https://www.linkedin.com/company/silent-superintelligence" aria-label="Silent on LinkedIn (placeholder)">LinkedIn</a>
-      </div>
-    </div>
-  </footer>
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
+  <div data-layout-footer></div>
+  <script src="assets/js/layout.js" defer></script>
   <script src="assets/js/main.js" defer></script>
 </body>
 </html>

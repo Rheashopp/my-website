@@ -1,0 +1,10 @@
+name = "silent-llm-proxy"
+main = "serverless/cloudflare/worker.js"
+
+[[routes]]
+pattern = "rheashopp.github.io/my-website/api/llm"
+custom_domain = true
+
+[vars]
+PROVIDER = "openai"
+# Set OPENAI_API_KEY or GEMINI_API_KEY via `wrangler secret put`

@@ -120,6 +120,30 @@ ol[class] {
   padding: clamp(3.5rem, 3.2rem + 2vw, 5.5rem) 0;
 }
 
+.layout-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.mt-6 {
+  margin-top: 1.5rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.max-width-640 {
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.btn-group--center {
+  justify-content: center;
+}
+
 .section-header {
   max-width: 720px;
   margin-bottom: clamp(2rem, 1.8rem + 1vw, 3rem);
