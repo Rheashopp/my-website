@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Silent Products — Super Intelligence Systems</title>
+  <meta name="description" content="Explore Silent’s suite of super intelligence systems for research, engineering, and governance teams." />
+  <link rel="canonical" href="https://silent.superintelligence/products/index.html" />
+  <link rel="icon" href="../assets/icons/favicon.svg" type="image/svg+xml" />
+  <meta property="og:title" content="Silent Products" />
+  <meta property="og:description" content="Discover Silent Orion, Helix, and Aegis — future-forward systems built for responsible autonomy." />
+  <meta property="og:image" content="https://silent.superintelligence/assets/img/og-cover.svg" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://silent.superintelligence/products/index.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Silent Products" />
+  <meta name="twitter:description" content="Explore Silent’s suite of super intelligent systems." />
+  <meta name="twitter:image" content="https://silent.superintelligence/assets/img/og-cover.svg" />
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <script>
+    window.SILENT_CONFIG = window.SILENT_CONFIG || {};
+    window.SILENT_CONFIG.site = Object.assign({}, window.SILENT_CONFIG.site, { basePath: '..' });
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Silent Products",
+    "url": "https://silent.superintelligence/products/index.html",
+    "description": "Explore Silent’s suite of super intelligence systems.",
+    "about": ["Silent Orion", "Silent Helix", "Silent Aegis"]
+  }
+  </script>
+</head>
+<body data-page="products">
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <header class="site-header">
+    <div class="container nav-container">
+      <a class="brand" data-href="../index.html" href="../index.html"><span class="brand-mark" aria-hidden="true"></span>Silent — Super Intelligence</a>
+      <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="primary-nav">Menu</button>
+      <nav id="primary-nav" class="primary-nav" data-open="false">
+        <ul>
+          <li><a data-nav="home" data-href="../index.html" href="../index.html">Home</a></li>
+          <li><a data-nav="products" data-href="index.html" href="index.html">Product</a></li>
+          <li><a data-nav="research" data-href="../research.html" href="../research.html">Research</a></li>
+          <li><a data-nav="chat" data-href="../chat.html" href="../chat.html">Chat</a></li>
+          <li><a data-nav="about" data-href="../about.html" href="../about.html">About</a></li>
+          <li><a data-nav="contact" data-href="../contact.html" href="../contact.html">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <main id="main-content">
+    <section class="section product-hero">
+      <div class="container">
+        <div class="product-meta">
+          <h1>Silent Product Catalog</h1>
+          <p>Choose the Silent system tailored to your mission. Each product combines disciplined autonomy with human-aligned oversight.</p>
+          <div class="badge-list" aria-label="Product focus areas">
+            <span class="badge">Research</span>
+            <span class="badge">Engineering</span>
+            <span class="badge">Governance</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" data-products-catalog>
+      <div class="container">
+        <div class="catalog-controls">
+          <label for="catalog-search" class="visually-hidden">Search products</label>
+          <input type="search" id="catalog-search" name="catalog-search" placeholder="Search products" aria-label="Search products" />
+          <div class="filter-tags" data-product-filters aria-label="Filter by focus areas"></div>
+          <a class="btn btn-secondary" data-href="../contact.html" href="../contact.html" data-request-access>Request Access</a>
+        </div>
+        <div class="cards" data-product-list aria-live="polite"></div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="container footer-grid">
+      <p>© <span id="year"></span> Silent. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="../privacy.html">Privacy</a>
+        <a href="../terms.html">Terms</a>
+        <a data-href="../research.html" href="../research.html">Research</a>
+        <a data-href="../contact.html" href="../contact.html">Contact</a>
+        <a href="https://x.com/silent" aria-label="Silent on X (placeholder)">X</a>
+        <a href="https://www.linkedin.com/company/silent-superintelligence" aria-label="Silent on LinkedIn (placeholder)">LinkedIn</a>
+      </div>
+    </div>
+  </footer>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+  <script src="../assets/js/main.js" defer></script>
+</body>
+</html>
