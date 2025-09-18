@@ -115,13 +115,79 @@
   }
 
   function highlightNav() {
-    const page = document.body.dataset.page;
-    if (!page) return;
-    document.querySelectorAll('[data-nav]').forEach((link) => {
-      if (link.getAttribute('data-nav') === page) {
+    const navLinks = Array.from(document.querySelectorAll('nav a[href]'));
+    if (!navLinks.length) return;
+
+    const normalizePath = (path) => {
+      if (!path) return '/';
+      let normalized = path;
+      if (!normalized.startsWith('/')) {
+        normalized = `/${normalized}`;
+      }
+      normalized = normalized.replace(/\/+/g, '/');
+      normalized = normalized.replace(/\/index\.html$/, '/');
+      if (normalized.length > 1 && normalized.endsWith('/')) {
+        normalized = normalized.slice(0, -1);
+      }
+      return normalized || '/';
+    };
+
+    const currentPath = normalizePath(window.location.pathname || '/');
+    const baseLink = navLinks.find((link) => {
+      const href = link.getAttribute('href') || '';
+      return href.includes('index.html') && !href.includes('#');
+    });
+    const homePath = baseLink
+      ? normalizePath(new URL(baseLink.getAttribute('href'), window.location.href).pathname)
+      : normalizePath('index.html');
+
+    let activeLink = null;
+    let activeScore = -Infinity;
+
+    navLinks.forEach((link) => {
+      const href = link.getAttribute('href');
+      if (!href || href.startsWith('mailto:') || href.startsWith('tel:')) {
+        return;
+      }
+
+      let url;
+      try {
+        url = new URL(href, window.location.href);
+      } catch (error) {
+        return;
+      }
+
+      if (url.origin !== window.location.origin) {
+        return;
+      }
+
+      const targetPath = normalizePath(url.pathname);
+      let score = -Infinity;
+
+      if (targetPath === currentPath) {
+        score = url.hash && url.hash !== '#' ? 2 : 3;
+      } else if (
+        targetPath !== homePath &&
+        targetPath !== '/' &&
+        currentPath.startsWith(`${targetPath}/`)
+      ) {
+        score = 1;
+      }
+
+      if (score > activeScore) {
+        activeScore = score;
+        activeLink = link;
+      }
+    });
+
+    navLinks.forEach((link) => {
+      const isActive = link === activeLink && activeScore > -Infinity;
+      if (isActive) {
         link.setAttribute('aria-current', 'page');
+        link.classList.add('text-indigo-400');
       } else {
         link.removeAttribute('aria-current');
+        link.classList.remove('text-indigo-400');
       }
     });
   }
@@ -512,6 +578,37 @@
   }
 })();
 
+document.addEventListener('DOMContentLoaded', () => {
+  const cfg = (window.SILENT_CONFIG && window.SILENT_CONFIG.voice) || {};
+  if (cfg.enabled !== true) return; // DEFAULT OFF
+
+  const anchor =
+    document.getElementById('conscious-orb-container') ||
+    document.querySelector('.hero, .hero-section, main') ||
+    document.body;
+
+  const resolveVoiceAsset = (input) => {
+    const basePath = (window.SILENT_CONFIG && window.SILENT_CONFIG.site && window.SILENT_CONFIG.site.basePath) || '.';
+    if (!basePath || basePath === '.' || basePath === '') return input;
+    const trimmed = basePath.replace(/\/+$/, '');
+    return `${trimmed}/${input}`.replace(/\/{2,}/g, '/');
+  };
+
+  const loadScript = (src, attr) => new Promise((res, rej) => {
+    if (attr && document.querySelector(`script[${attr}]`)) return res();
+    const s = document.createElement('script');
+    const finalSrc = resolveVoiceAsset(src);
+    s.src = finalSrc; if (attr) { const [k,v]=attr.split('='); s.setAttribute(k, v.replace(/"/g,'')); }
+    s.onload = res; s.onerror = rej; document.head.appendChild(s);
+  });
+
+  Promise.resolve()
+    .then(() => loadScript('assets/js/vendor/webaudio-viz.js','data-webaudio-viz="true"'))
+    .then(() => loadScript('assets/js/voice.js','data-voice-controller="true"'))
+    .then(() => typeof window.initVoiceOverlay === 'function' && window.initVoiceOverlay(anchor, cfg))
+    .catch(err => console.error('[voice overlay]', err));
+});
+
 (function () {
   'use strict';
 
@@ -574,6 +671,32 @@
         resolve();
         return;
       }
+      var attrSelector = null;
+      var isReady = null;
+      if (src.indexOf('webaudio-viz') !== -1) {
+        attrSelector = 'script[data-webaudio-viz="true"]';
+        isReady = function () { return typeof window.WebAudioViz === 'function'; };
+      } else if (src.indexOf('voice.js') !== -1) {
+        attrSelector = 'script[data-voice-controller="true"]';
+        isReady = function () { return typeof window.initVoiceOverlay === 'function'; };
+      }
+      if (attrSelector) {
+        var attrScript = document.querySelector(attrSelector);
+        if (attrScript) {
+          if (isReady && isReady()) {
+            resolve();
+            return;
+          }
+          attrScript.addEventListener('load', function handleAttrLoad() {
+            attrScript.setAttribute('data-loaded', 'true');
+            resolve();
+          }, { once: true });
+          attrScript.addEventListener('error', function handleAttrError(error) {
+            reject(error);
+          }, { once: true });
+          return;
+        }
+      }
       var existing = document.querySelector('script[data-dynamic-src="' + src + '"]');
       if (existing) {
         if (existing.hasAttribute('data-loaded')) {
@@ -592,6 +715,12 @@
       script.src = src;
       script.defer = true;
       script.setAttribute('data-dynamic-src', src);
+      if (src.indexOf('webaudio-viz') !== -1) {
+        script.setAttribute('data-webaudio-viz', 'true');
+      }
+      if (src.indexOf('voice.js') !== -1) {
+        script.setAttribute('data-voice-controller', 'true');
+      }
       script.addEventListener('load', function () {
         script.setAttribute('data-loaded', 'true');
         resolve();
