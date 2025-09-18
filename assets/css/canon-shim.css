@@ -1,0 +1,31 @@
+/* Canon shim: enforce header/nav layout to match home */
+nav.backdrop-blur-sm {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+nav.backdrop-blur-sm > .hidden.md\:flex {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 1.25rem);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+nav.backdrop-blur-sm > .hidden.md\:flex a {
+  display: inline-flex;
+  align-items: center;
+}
+
+nav.backdrop-blur-sm {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+/* Ensure nothing overlays nav on non-home pages */
+.page-shell, .hero, .gradient-overlay {
+  pointer-events: auto;
+}
