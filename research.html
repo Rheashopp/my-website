@@ -79,6 +79,7 @@
   </style>
 
   <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/header-fix.css">
 </head>
 
 <body class="bg-black text-white font-['Inter'] overflow-x-hidden" data-page="research">
@@ -87,26 +88,28 @@
   <!-- Vanta background layer -->
   <div id="vanta-bg" class="fixed top-0 left-0 w-full h-full z-0"></div>
   <!-- NAVBAR -->
-  <nav class="relative z-10 py-6 px-8 flex justify-between items-center backdrop-blur-sm">
-    <a href="index.html" class="flex items-center space-x-2 hover:opacity-80 transition" aria-label="Silent home">
-      <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center conscious-orb">
-        <div class="w-2 h-2 rounded-full bg-white animate-pulse"></div>
+  <header class="site-header">
+    <nav class="site-nav relative z-10 py-6 px-8 flex justify-between items-center backdrop-blur-sm">
+      <a href="index.html" class="flex items-center space-x-2 hover:opacity-80 transition" aria-label="Silent home">
+        <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center conscious-orb">
+          <div class="w-2 h-2 rounded-full bg-white animate-pulse"></div>
+        </div>
+        <span class="text-xl font-semibold">Silent</span>
+      </a>
+      <div class="nav-links hidden md:flex space-x-8">
+        <a href="index.html#capabilities" data-page-target="capabilities" class="hover:text-indigo-400 transition">Capabilities</a>
+        <a href="index.html#consciousness" data-page-target="consciousness" class="hover:text-indigo-400 transition">Consciousness</a>
+        <a href="products/index.html" data-page-target="products" class="hover:text-indigo-400 transition">Products</a>
+        <a href="research.html" data-page-target="research" class="hover:text-indigo-400 transition">Research</a>
+        <a href="chat.html" data-page-target="chat" class="hover:text-indigo-400 transition">Chat</a>
+        <a href="about.html" data-page-target="about" class="hover:text-indigo-400 transition">About</a>
+        <a href="contact.html" data-page-target="contact" class="hover:text-indigo-400 transition">Contact</a>
       </div>
-      <span class="text-xl font-semibold">Silent</span>
-    </a>
-    <div class="hidden md:flex space-x-8">
-      <a href="index.html#capabilities" data-page-target="capabilities" class="hover:text-indigo-400 transition">Capabilities</a>
-      <a href="index.html#consciousness" data-page-target="consciousness" class="hover:text-indigo-400 transition">Consciousness</a>
-      <a href="products/index.html" data-page-target="products" class="hover:text-indigo-400 transition">Products</a>
-      <a href="research.html" data-page-target="research" class="hover:text-indigo-400 transition">Research</a>
-      <a href="chat.html" data-page-target="chat" class="hover:text-indigo-400 transition">Chat</a>
-      <a href="about.html" data-page-target="about" class="hover:text-indigo-400 transition">About</a>
-      <a href="contact.html" data-page-target="contact" class="hover:text-indigo-400 transition">Contact</a>
-    </div>
-    <button id="access-btn" class="px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full hover:opacity-90 transition">
-      Access
-    </button>
-  </nav>
+      <button id="access-btn" class="px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full hover:opacity-90 transition">
+        Access
+      </button>
+    </nav>
+  </header>
   <main id="main" class="relative z-10">
     <section class="section">
       <div class="container">
