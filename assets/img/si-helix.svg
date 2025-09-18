@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" role="img" aria-labelledby="title desc">
+  <title id="title">Silent Helix Placeholder Visualization</title>
+  <desc id="desc">Geometric placeholder art representing the Silent Helix product.</desc>
+  <defs>
+    <linearGradient id="helix-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#111d2f" />
+      <stop offset="100%" stop-color="#1f2f63" />
+    </linearGradient>
+    <linearGradient id="helix-accent" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="0%" stop-color="#9a82ff" stop-opacity="0.85" />
+      <stop offset="100%" stop-color="#57d8ff" stop-opacity="0.75" />
+    </linearGradient>
+  </defs>
+  <rect width="960" height="600" rx="48" fill="url(#helix-bg)" />
+  <g fill="none" stroke="url(#helix-accent)" stroke-width="10" stroke-linecap="round">
+    <path d="M160 180c80 0 80 240 160 240s80-240 160-240 80 240 160 240 80-240 160-240" opacity="0.75" />
+    <path d="M160 220c80 0 80 200 160 200s80-200 160-200 80 200 160 200 80-200 160-200" opacity="0.35" />
+  </g>
+  <rect x="220" y="430" width="520" height="12" rx="6" fill="url(#helix-accent)" opacity="0.8" />
+</svg>
