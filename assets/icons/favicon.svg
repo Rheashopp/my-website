@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Silent favicon</title>
+  <desc id="desc">Glowing orb representing Silent</desc>
+  <defs>
+    <radialGradient id="g" cx="50%" cy="40%" r="65%">
+      <stop offset="0%" stop-color="#9d9bff"/>
+      <stop offset="65%" stop-color="#6d6bff" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#05070f" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="64" height="64" rx="18" fill="#05070f"/>
+  <circle cx="32" cy="32" r="22" fill="url(#g)"/>
+  <circle cx="32" cy="26" r="10" fill="#f7f8ff" fill-opacity="0.8"/>
+</svg>

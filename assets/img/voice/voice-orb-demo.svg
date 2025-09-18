@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 240" role="img" aria-labelledby="title desc">
+  <title id="title">Silent Voice Orb States Preview</title>
+  <desc id="desc">Animated illustration showing idle, listening, thinking, and speaking states of the Silent voice orb.</desc>
+  <style>
+    :root { color-scheme: dark; }
+    svg { font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; background: #05070f; }
+    text { fill: #f0f5ff; font-size: 18px; letter-spacing: 1px; }
+    .label { text-transform: uppercase; font-size: 14px; fill: #a9b7ff; letter-spacing: 2.5px; }
+    .card { transform-origin: center; }
+    .halo { fill: url(#haloGradient); opacity: 0.65; }
+    .core { fill: url(#coreGradient); }
+    .pulse { fill: none; stroke: #7ad7ff; stroke-width: 2; opacity: 0; }
+  </style>
+  <defs>
+    <linearGradient id="coreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#9ddcff" />
+      <stop offset="100%" stop-color="#6f8dff" />
+    </linearGradient>
+    <radialGradient id="haloGradient" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#9ddcff" stop-opacity="0.85" />
+      <stop offset="70%" stop-color="#6f8dff" stop-opacity="0.15" />
+      <stop offset="100%" stop-color="#6f8dff" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <g transform="translate(120 120)" class="card">
+    <text class="label" x="0" y="-80" text-anchor="middle">IDLE</text>
+    <circle class="halo" r="68">
+      <animate attributeName="r" values="60;68;60" dur="4s" repeatCount="indefinite" />
+      <animate attributeName="opacity" values="0.45;0.7;0.45" dur="4s" repeatCount="indefinite" />
+    </circle>
+    <circle class="core" r="32">
+      <animate attributeName="r" values="28;32;28" dur="4s" repeatCount="indefinite" />
+    </circle>
+    <text x="0" y="78" text-anchor="middle">Gentle breathing glow</text>
+  </g>
+  <g transform="translate(360 120)" class="card">
+    <text class="label" x="0" y="-80" text-anchor="middle">LISTENING</text>
+    <circle class="halo" r="70" opacity="0.8" />
+    <circle class="core" r="30" />
+    <circle class="pulse" r="36">
+      <animate attributeName="r" values="36;70" dur="1.8s" repeatCount="indefinite" />
+      <animate attributeName="opacity" values="0.8;0" dur="1.8s" repeatCount="indefinite" />
+    </circle>
+    <circle class="pulse" r="36">
+      <animate attributeName="r" values="36;70" begin="0.9s" dur="1.8s" repeatCount="indefinite" />
+      <animate attributeName="opacity" values="0.8;0" begin="0.9s" dur="1.8s" repeatCount="indefinite" />
+    </circle>
+    <text x="0" y="78" text-anchor="middle">Ripples capture voice</text>
+  </g>
+  <g transform="translate(600 120)" class="card">
+    <text class="label" x="0" y="-80" text-anchor="middle">THINKING</text>
+    <circle class="halo" r="64" opacity="0.55" />
+    <circle class="core" r="26" />
+    <g>
+      <circle fill="#7ad7ff" r="6" transform="translate(44 0)">
+        <animateTransform attributeName="transform" type="rotate" values="0 0 0;360 0 0" dur="6s" repeatCount="indefinite" />
+      </circle>
+      <circle fill="#7ad7ff" opacity="0.6" r="4" transform="translate(-36 0)">
+        <animateTransform attributeName="transform" type="rotate" values="0 0 0;-360 0 0" dur="7s" repeatCount="indefinite" />
+      </circle>
+      <circle fill="#9ddcff" opacity="0.8" r="5" transform="translate(0 38)">
+        <animateTransform attributeName="transform" type="rotate" values="0 0 0;360 0 0" dur="5s" repeatCount="indefinite" />
+      </circle>
+    </g>
+    <text x="0" y="78" text-anchor="middle">Orbiting reasoning trail</text>
+  </g>
+  <g transform="translate(840 120)" class="card">
+    <text class="label" x="0" y="-80" text-anchor="middle">SPEAKING</text>
+    <circle class="halo" r="60" opacity="0.7" />
+    <circle class="core" r="28">
+      <animate attributeName="opacity" values="1;0.8;1" dur="1.6s" repeatCount="indefinite" />
+    </circle>
+    <g>
+      <circle class="pulse" r="34">
+        <animate attributeName="r" values="34;78" dur="1.4s" repeatCount="indefinite" />
+        <animate attributeName="opacity" values="0.9;0" dur="1.4s" repeatCount="indefinite" />
+      </circle>
+      <circle class="pulse" r="34">
+        <animate attributeName="r" values="34;78" begin="0.7s" dur="1.4s" repeatCount="indefinite" />
+        <animate attributeName="opacity" values="0.9;0" begin="0.7s" dur="1.4s" repeatCount="indefinite" />
+      </circle>
+    </g>
+    <text x="0" y="78" text-anchor="middle">Answering with clarity</text>
+  </g>
+</svg>

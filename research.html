@@ -1,38 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SI - Research</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>body{font-family:'Inter',sans-serif;} .gradient-text{background:linear-gradient(90deg,#6366f1,#8b5cf6,#ec4899);-webkit-background-clip:text;background-clip:text;color:transparent;}</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Silent Research — Benchmarks, Methodology, Safety</title>
+  <meta name="description" content="Dive into Silent’s research roadmap, including benchmarks, methodology, limitations, and safety pillars." />
+  <link rel="canonical" href="https://silent.superintelligence/research.html" />
+  <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml" />
+  <meta property="og:title" content="Silent Research" />
+  <meta property="og:description" content="Review Silent’s research program, benchmarks, methodology, and safety guardrails." />
+  <meta property="og:image" content="https://silent.superintelligence/assets/img/og-cover.svg" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://silent.superintelligence/research.html" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Silent Research" />
+  <meta name="twitter:description" content="Benchmarks, methodology, limitations, and safety principles for Silent." />
+  <meta name="twitter:image" content="https://silent.superintelligence/assets/img/og-cover.svg" />
+  <link rel="stylesheet" href="assets/css/style.css" />
 </head>
-<body class="bg-black text-white">
-    <nav class="relative z-10 py-6 px-8 flex justify-between items-center backdrop-blur-sm">
-<a href="index.html" class="flex items-center space-x-2 hover:opacity-80 transition">
-    <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center conscious-orb">
-        <div class="w-2 h-2 rounded-full bg-white animate-pulse"></div>
+<body data-page="research">
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <header class="site-header">
+    <div class="container nav-container">
+      <a class="brand" data-href="index.html" href="index.html"><span class="brand-mark" aria-hidden="true"></span>Silent — Super Intelligence</a>
+      <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="primary-nav">Menu</button>
+      <nav id="primary-nav" class="primary-nav" data-open="false">
+        <ul>
+          <li><a data-nav="home" data-href="index.html" href="index.html">Home</a></li>
+          <li><a data-nav="products" data-href="products/index.html" href="products/index.html">Product</a></li>
+          <li><a data-nav="research" data-href="research.html" href="research.html">Research</a></li>
+          <li><a data-nav="chat" data-href="chat.html" href="chat.html">Chat</a></li>
+          <li><a data-nav="about" data-href="about.html" href="about.html">About</a></li>
+          <li><a data-nav="contact" data-href="contact.html" href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
     </div>
-    <span class="text-xl font-semibold">Silent</span>
-</a>
-        <div class="hidden md:flex space-x-8">
-            <a href="capabilities.html" class="hover:text-indigo-400 transition">Capabilities</a>
-            <a href="consciousness.html" class="hover:text-indigo-400 transition">Consciousness</a>
-            <a href="chat.html" class="hover:text-indigo-400 transition">Chat</a>
-            <a href="about.html" class="hover:text-indigo-400 transition">About</a>
+  </header>
+  <main id="main-content">
+    <section class="section">
+      <div class="container">
+        <h1>Silent Research Program</h1>
+        <p>Silent develops super-intelligent systems with rigorous evaluation and verifiable safeguards. Explore the roadmap while our white paper is finalized.</p>
+        <div class="notice warning" role="status">In preparation — join early access to receive the full white paper when it ships.</div>
+        <div class="btn-group" style="margin-top:1.5rem;">
+          <a class="btn btn-primary" data-href="contact.html" href="contact.html">Request Access</a>
+          <a class="btn btn-secondary" href="#safety">Safety Pillars</a>
         </div>
-        <a href="access.html" class="px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full hover:opacity-90 transition">Access</a>
-    </nav>
-    <section class="py-24 px-6">
-        <div class="max-w-3xl mx-auto">
-            <h1 class="text-4xl font-bold mb-6 gradient-text">Research</h1>
-            <p class="text-gray-300 mb-4">Find papers and articles related to the development of Super Intelligence.</p>
-        </div>
+      </div>
     </section>
-    <footer class="relative z-10 py-12 px-6 border-t border-gray-800/50 text-center text-gray-500 text-sm">
-        <p>© 2023 Super Intelligence. All rights reserved.</p>
-    </footer>
+
+    <section class="section section-light anchor-target" id="benchmarks">
+      <div class="container">
+        <h2>Benchmarks &amp; Evaluation</h2>
+        <p>Silent evaluates capabilities across decision quality, latency, and oversight alignment. Our benchmark suite focuses on:</p>
+        <ul class="list">
+          <li>Multimodal reasoning with provenance checks across 20+ public and private datasets.</li>
+          <li>Repository-scale code transformations validated through deterministic CI pipelines.</li>
+          <li>Governance scoring that simulates adversarial behaviors and containment triggers.</li>
+        </ul>
+        <p>Each release includes reproducible runbooks so partners can validate metrics independently.</p>
+      </div>
+    </section>
+
+    <section class="section anchor-target" id="methodology">
+      <div class="container">
+        <h2>Methodology</h2>
+        <p>Our methodology balances rapid iteration with provable oversight:</p>
+        <ol class="list">
+          <li><strong>Alignment-first design:</strong> Model objectives are codified as programmable guardrails before deployment.</li>
+          <li><strong>Human-in-the-loop orchestration:</strong> Silent stages tasks into checkpoints requiring human acknowledgement.</li>
+          <li><strong>Observable autonomy:</strong> Every action emits telemetry captured by Silent Aegis for review.</li>
+        </ol>
+        <p>Partners receive access to methodology updates through our research briefings.</p>
+      </div>
+    </section>
+
+    <section class="section section-light anchor-target" id="limitations">
+      <div class="container">
+        <h2>Known Limitations</h2>
+        <p>We actively track and disclose Silent’s limitations to promote responsible use:</p>
+        <ul class="list">
+          <li>Silent defers to human oversight when encountering novel policy conflicts.</li>
+          <li>High-context tool integrations require onboarding sessions to ensure proper containment.</li>
+          <li>We rely on partner infrastructure for certain latency-sensitive integrations.</li>
+        </ul>
+        <p>Submit feedback during early access to help us prioritize mitigations.</p>
+      </div>
+    </section>
+
+    <section class="section anchor-target" id="safety">
+      <div class="container">
+        <h2>Safety &amp; Ethics Pillars</h2>
+        <div class="cards">
+          <article class="card">
+            <h3>Value Alignment</h3>
+            <p>Silent models your policies as first-class objectives with live guardrails.</p>
+          </article>
+          <article class="card">
+            <h3>Transparency</h3>
+            <p>Explainability dashboards show the why behind every plan, change, and escalation.</p>
+          </article>
+          <article class="card">
+            <h3>Containment</h3>
+            <p>Runtime sandboxes, scoped credentials, and throttles stop Silent from exceeding intent.</p>
+          </article>
+          <article class="card">
+            <h3>Oversight</h3>
+            <p>Oversight packs feed Silent Aegis, enabling humans to approve, halt, or trace actions instantly.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="container footer-grid">
+      <p>© <span id="year"></span> Silent. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a data-href="research.html" href="research.html">Research</a>
+        <a data-href="contact.html" href="contact.html">Contact</a>
+        <a href="https://x.com/silent" aria-label="Silent on X (placeholder)">X</a>
+        <a href="https://www.linkedin.com/company/silent-superintelligence" aria-label="Silent on LinkedIn (placeholder)">LinkedIn</a>
+      </div>
+    </div>
+  </footer>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+  <script src="assets/js/main.js" defer></script>
 </body>
 </html>
