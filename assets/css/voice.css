@@ -20,13 +20,13 @@
   position: absolute;
 }
 
-.voice-overlay__header {
+.voice-overlay .voice-overlay__header {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
 
-.voice-overlay__button {
+.voice-overlay .voice-overlay__button {
   position: relative;
   width: 64px;
   height: 64px;
@@ -38,12 +38,12 @@
   isolation: isolate;
 }
 
-.voice-overlay__button:focus-visible {
+.voice-overlay .voice-overlay__button:focus-visible {
   outline: 3px solid rgba(147, 197, 253, 0.65);
   outline-offset: 4px;
 }
 
-.voice-overlay__orb {
+.voice-overlay .voice-overlay__orb {
   position: absolute;
   inset: 0;
   border-radius: 50%;
@@ -54,7 +54,7 @@
   box-shadow: 0 0 20px rgba(115, 120, 255, 0.5);
 }
 
-.voice-overlay__ring {
+.voice-overlay .voice-overlay__ring {
   position: absolute;
   inset: 0;
   border-radius: 50%;
@@ -63,17 +63,17 @@
   transition: transform 320ms ease, opacity 260ms ease;
 }
 
-.voice-overlay__ring--middle {
+.voice-overlay .voice-overlay__ring--middle {
   inset: -10%;
   opacity: 0.45;
 }
 
-.voice-overlay__ring--outer {
+.voice-overlay .voice-overlay__ring--outer {
   inset: -20%;
   opacity: 0.25;
 }
 
-.voice-overlay__vu {
+.voice-overlay .voice-overlay__vu {
   position: relative;
   width: 32px;
   height: 32px;
@@ -83,13 +83,13 @@
   transition: transform 120ms ease-out;
 }
 
-.voice-overlay__status {
+.voice-overlay .voice-overlay__status {
   flex: 1;
   font-size: 0.95rem;
   line-height: 1.4;
 }
 
-.voice-overlay__status strong {
+.voice-overlay .voice-overlay__status strong {
   display: block;
   font-size: 0.75rem;
   letter-spacing: 0.12em;
@@ -97,7 +97,7 @@
   color: rgba(161, 167, 255, 0.75);
 }
 
-.voice-overlay__transcript {
+.voice-overlay .voice-overlay__transcript {
   background: rgba(17, 20, 40, 0.72);
   border: 1px solid rgba(147, 153, 255, 0.2);
   border-radius: 14px;
@@ -108,36 +108,36 @@
   color: rgba(235, 238, 255, 0.9);
 }
 
-.voice-overlay__log {
+.voice-overlay .voice-overlay__log {
   display: grid;
   gap: 0.5rem;
   font-size: 0.85rem;
   color: rgba(208, 212, 255, 0.78);
 }
 
-.voice-overlay__log li {
+.voice-overlay .voice-overlay__log li {
   list-style: none;
   display: flex;
   gap: 0.5rem;
 }
 
-.voice-overlay__log li strong {
+.voice-overlay .voice-overlay__log li strong {
   color: rgba(255, 255, 255, 0.88);
 }
 
-.voice-overlay__fallback {
+.voice-overlay .voice-overlay__fallback {
   border-top: 1px solid rgba(147, 153, 255, 0.18);
   padding-top: 0.75rem;
   display: grid;
   gap: 0.6rem;
 }
 
-.voice-overlay__fallback label {
+.voice-overlay .voice-overlay__fallback label {
   font-size: 0.85rem;
   color: rgba(208, 212, 255, 0.85);
 }
 
-.voice-overlay__fallback textarea {
+.voice-overlay .voice-overlay__fallback textarea {
   width: 100%;
   min-height: 96px;
   padding: 0.65rem 0.75rem;
@@ -148,7 +148,7 @@
   resize: vertical;
 }
 
-.voice-overlay__fallback button {
+.voice-overlay .voice-overlay__fallback button {
   justify-self: start;
   padding: 0.55rem 1.1rem;
   border-radius: 999px;
@@ -190,12 +190,12 @@
   box-shadow: 0 0 22px rgba(104, 186, 255, 0.35);
 }
 
-.voice-overlay__note {
+.voice-overlay .voice-overlay__note {
   font-size: 0.75rem;
   color: rgba(208, 212, 255, 0.6);
 }
 
-.voice-overlay__sr {
+.voice-overlay .voice-overlay__sr {
   border: 0;
   clip: rect(0 0 0 0);
   height: 1px;
@@ -207,9 +207,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .voice-overlay__ring,
-  .voice-overlay__button,
-  .voice-overlay__vu {
+  .voice-overlay .voice-overlay__ring,
+  .voice-overlay .voice-overlay__button,
+  .voice-overlay .voice-overlay__vu {
     animation: none !important;
     transition: none !important;
   }
