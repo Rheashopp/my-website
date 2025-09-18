@@ -2,16 +2,16 @@ const DEFAULT_PROVIDER = (process.env.PROVIDER || 'openai').toLowerCase();
 const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4o-mini';
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
 
+const ALLOWED_ORIGIN = 'https://rheashopp.github.io';
 const allowedHeaders = {
   'Access-Control-Allow-Headers': 'Content-Type, Accept, X-Requested-With',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
 exports.handler = async function handler(event) {
-  const origin = event.headers.origin || '*';
   const corsHeaders = {
     ...allowedHeaders,
-    'Access-Control-Allow-Origin': origin,
+    'Access-Control-Allow-Origin': ALLOWED_ORIGIN,
     Vary: 'Origin',
   };
 

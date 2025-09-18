@@ -5,46 +5,50 @@
       "name": "Silent Orion",
       "tagline": "Autonomous research co-pilot",
       "category": ["Research", "Intelligence"],
-      "summary": "Silent Orion synthesizes multimodal evidence, plans complex investigations, and maintains transparent provenance across every insight.",
+      "summary": "Plans investigations, orchestrates tool use, and links every insight to evidence you can replay.",
       "heroImage": "assets/img/si-orion.svg",
       "whatItDoes": [
-        "Consolidates sprawling research corpora into verified knowledge graphs",
-        "Maintains live evidence trails with citations and provenance weighting",
-        "Coordinates multi-agent research rituals with human-in-the-loop checkpoints"
+        "Maps complex research questions into accountable plans with clear milestones.",
+        "Activates trusted tools to gather data, annotations, and citations automatically.",
+        "Delivers evidence-linked synthesis that keeps reviewers and regulators aligned."
       ],
       "howItWorks": [
-        "Scans source systems, extracts high-signal fragments, and tags context",
-        "Generates experiment trees with tool-ready actions and responsible owners",
-        "Packages findings as decision briefs linked to machine-auditable proofs"
+        "Captures your brief and decomposes it into policy-aware research threads.",
+        "Coordinates data pulls and analysis via approved notebooks, APIs, and agents.",
+        "Produces decision briefs with live provenance and exportable reference trails."
       ],
       "features": [
-        "Scenario planning with adaptive instrumentation",
-        "Grounded synthesis with confidence scoring",
-        "Automated citation and source reconciliation",
-        "Stakeholder-ready reporting across channels"
+        "Scenario planning with adaptive guardrails and human checkpoints.",
+        "Evidence graphing that proves where every claim originated.",
+        "Dynamic investigation logs and reviewer-ready summaries.",
+        "Policy pack templates for regulated industries."
       ],
       "specs": {
-        "context-window": "Up to 2M tokens across modalities",
-        "tool-integrations": "Graph DBs, Jupyter, Notion, custom APIs",
-        "audit-mode": "Evidence replay and immutable provenance ledger",
-        "deployment": "Private cloud or air-gapped enclave"
+        "context-window": "Up to 2M multimodal tokens per workspace",
+        "integrations": "Graph databases, research notebooks, custom data lakes",
+        "provenance": "Cryptographic evidence ledger with replay",
+        "deployment": "Customer-managed VPC or isolated private cloud"
       },
       "faq": [
         {
-          "q": "How does Orion keep its sources trustworthy?",
-          "a": "Every synthesis is anchored to evidence fragments with integrity hashes and automated citation diffs so you can replay the analysis." 
+          "q": "How does Orion keep results verifiable?",
+          "a": "Each assertion is anchored to a signed evidence fragment with timestamps, so audits and peer review stay effortless."
         },
         {
-          "q": "Can Orion use our proprietary tools?",
-          "a": "Yes. The orchestration layer exposes secure connectors and policy packs for bespoke research stacks." 
+          "q": "Can Orion plug into our internal tools?",
+          "a": "Yes. Orion ships with secure adapters and a policy sandbox for bespoke datasets and research workflows."
         },
         {
-          "q": "What teams benefit the most?",
-          "a": "Strategy, R&D, and investigative units that manage dynamic intelligence landscapes and require verifiable insights." 
+          "q": "Who typically deploys Orion first?",
+          "a": "Strategy, R&D, and intelligence teams that need fast synthesis without sacrificing traceability."
         },
         {
-          "q": "How is human oversight enforced?",
-          "a": "Operators approve experiment checkpoints and Orion logs every action for later review." 
+          "q": "What oversight controls exist?",
+          "a": "Human approvers gate key phases, and administrators can enforce policy packs per project."
+        },
+        {
+          "q": "Does Orion support multilingual corpora?",
+          "a": "It supports multilingual ingestion and can translate sources while preserving original context."
         }
       ]
     },
@@ -53,47 +57,51 @@
       "name": "Silent Helix",
       "tagline": "Code generation & refactor engine",
       "category": ["Engineering", "Automation"],
-      "summary": "Silent Helix rewrites complex systems with repo awareness, verifiable tests, and explainable changesets you can trust.",
+      "summary": "Understands repositories end-to-end, drafts diffs, runs tests, and explains every change before it ships.",
       "heroImage": "assets/img/si-helix.svg",
       "whatItDoes": [
-        "Understands architecture context across monorepos and services",
-        "Designs change plans aligned to acceptance criteria and guardrails",
-        "Produces human-auditable diffs with rationale and upgrade notes"
+        "Learns your architecture and dependency graph for context-aware planning.",
+        "Generates and updates code with deterministic, repo-aware diffs.",
+        "Explains rationale in reviewer-friendly language with linked evidence."
       ],
       "howItWorks": [
-        "Indexes your repositories and dependency graphs for situational awareness",
-        "Drafts iterative change proposals validated by existing and generated tests",
-        "Summarizes outcomes with documentation-ready briefs"
+        "Ingests repositories and policies to set guardrails for autonomous commits.",
+        "Runs iterative change plans validated by existing and generated tests.",
+        "Produces annotated diffs, rollout guides, and documentation snippets."
       ],
       "features": [
-        "Repo-aware diffing with semantic grouping",
-        "Test-guided refactors and safety nets",
-        "Explainer summaries for reviewers",
-        "Secure isolated execution pods",
-        "Continuous improvement feedback loops"
+        "Repo-wide refactor orchestration with semantic grouping.",
+        "Test-guided execution, including sandboxed CI dry runs.",
+        "Change rationale summaries for reviewers and stakeholders.",
+        "Secure execution pods with secrets isolation.",
+        "Continuous feedback loop that learns from merged PRs."
       ],
       "specs": {
-        "language-support": "Polyglot (TypeScript, Python, Go, Rust, more)",
+        "language-support": "TypeScript, Python, Go, Rust, Java, plus extensible adapters",
         "ci-integrations": "GitHub, GitLab, Jenkins, Buildkite",
-        "compliance": "SOC2 Type II ready, configurable data retention",
-        "deployment": "Managed VPC or customer-hosted"
+        "compliance": "SOC 2 Type II controls with configurable retention",
+        "deployment": "Hosted by Silent or deployed on your infrastructure"
       },
       "faq": [
         {
-          "q": "Can Helix operate on large monorepos?",
-          "a": "Absolutely. Helix parallelizes context ingestion and maintains deterministic plans even for multi-million line estates." 
+          "q": "How does Helix stay aligned with our code standards?",
+          "a": "It uses policy packs and lint configurations pulled directly from your repos before drafting any change."
         },
         {
-          "q": "How does Helix keep humans in control?",
-          "a": "Every execution step requires policy-aligned approval gates and produces interpretable diffs before merging." 
+          "q": "Can Helix manage large monorepos?",
+          "a": "Yes. Helix shards context intelligently and coordinates multi-branch plans without losing determinism."
         },
         {
-          "q": "Does it write documentation?",
-          "a": "Yes — release notes, ADRs, and migration guides are generated alongside each change." 
+          "q": "What review visibility do engineers get?",
+          "a": "Engineers receive linked diffs, tests, and rationales so they can approve or adjust each step."
         },
         {
-          "q": "What about compliance requirements?",
-          "a": "Helix ships with auditable logs, PII scrubbing, and customizable data residency controls." 
+          "q": "Does Helix generate documentation?",
+          "a": "Documentation updates, ADRs, and release notes are produced alongside every approved change."
+        },
+        {
+          "q": "Is there support for air-gapped environments?",
+          "a": "Helix can run in air-gapped enclaves with offline artifact sync workflows."
         }
       ]
     },
@@ -102,47 +110,51 @@
       "name": "Silent Aegis",
       "tagline": "Safety & oversight layer",
       "category": ["Governance", "Safety"],
-      "summary": "Silent Aegis enforces policy-driven guardrails, scores risk in real-time, and keeps humans deeply informed of every decision.",
+      "summary": "Scores risk in real time, enforces policy packs, and surfaces transparent oversight dashboards for every agent.",
       "heroImage": "assets/img/si-aegis.svg",
       "whatItDoes": [
-        "Monitors all agent activity for compliance and emergent behaviors",
-        "Runs policy packs tuned to regulatory and organizational standards",
-        "Surfaces human-readable oversight snapshots and anomaly alerts"
+        "Monitors human and machine actions against customizable policy packs.",
+        "Runs live trace and audit tooling to surface anomalies instantly.",
+        "Generates risk reports and executive briefings with contextual evidence."
       ],
       "howItWorks": [
-        "Taps live event streams with low-latency filters",
-        "Scores interactions using governance heuristics and ML observers",
-        "Routes escalations to accountable owners with contextual evidence"
+        "Streams events from agents, APIs, and humans-in-the-loop.",
+        "Scores interactions using governance heuristics and ML observers.",
+        "Routes escalations with recommended actions and audit-ready packets."
       ],
       "features": [
-        "Policy pack marketplace with version control",
-        "Live trace explorer and anomaly heatmaps",
-        "Risk scoring dashboards with drill-downs",
-        "Autonomous containment actions with human approval",
-        "Immutable audit log exports"
+        "Policy marketplace with version control and approval workflows.",
+        "Live trace explorer with anomaly heatmaps and filters.",
+        "Risk scoring dashboards tailored to each stakeholder.",
+        "Automated containment actions gated by human approval.",
+        "Immutable audit export with chain-of-custody."
       ],
       "specs": {
-        "latency": "Sub-second signal detection",
-        "coverage": "Agents, APIs, humans-in-the-loop",
-        "reporting": "Real-time dashboards + scheduled compliance reports",
+        "latency": "Sub-second detection across distributed systems",
+        "coverage": "Agents, APIs, workflows, and manual interventions",
+        "reporting": "Real-time dashboards plus scheduled compliance briefs",
         "deployment": "Hybrid cloud with regional failover"
       },
       "faq": [
         {
-          "q": "How does Aegis integrate with existing tooling?",
-          "a": "Aegis exposes event and webhook interfaces plus native connectors for major incident platforms." 
+          "q": "Can we adapt Aegis policies to regional regulations?",
+          "a": "Absolutely. Start with Silent’s templates and layer your jurisdiction-specific rules."
         },
         {
-          "q": "Can we customize policy packs?",
-          "a": "Yes. Start with our baseline sets and tailor the guardrails to your governance requirements." 
+          "q": "How intrusive is the monitoring?",
+          "a": "Aegis watches signals, not content, and only escalates when policy thresholds are crossed."
         },
         {
-          "q": "Does Aegis remediate issues automatically?",
-          "a": "It can suggest or trigger containment depending on your risk posture, always with human authorization options." 
+          "q": "Does Aegis integrate with our incident tooling?",
+          "a": "It connects to PagerDuty, ServiceNow, Slack, and SIEM platforms for seamless response orchestration."
         },
         {
-          "q": "What visibility do executives get?",
-          "a": "Role-based dashboards align oversight to leadership, compliance, and operations stakeholders." 
+          "q": "Who benefits from Aegis dashboards?",
+          "a": "Risk teams, compliance leaders, and executives receive role-based views tuned to their responsibilities."
+        },
+        {
+          "q": "What happens if the platform detects a high-risk event?",
+          "a": "Aegis can trigger containment playbooks, require human acknowledgment, and preserve an immutable audit trail."
         }
       ]
     }

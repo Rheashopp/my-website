@@ -1,325 +1,319 @@
 (function () {
   'use strict';
 
-  document.addEventListener('DOMContentLoaded', () => {
-    const orb = document.getElementById('voice-orb');
-    if (!orb) return;
+  var SESSION_KEY = 'silent-session-id';
+  var DEFAULTS = {
+    provider: 'demo',
+    ttsVoiceName: null,
+    enabled: false,
+  };
 
-    const statusEls = document.querySelectorAll('.voice-status [data-state]');
-    const transcriptEl = document.querySelector('.voice-transcript');
-    const logEl = document.querySelector('.voice-log');
-    const consentEl = document.querySelector('.voice-consent');
-    const consentBtn = document.getElementById('voice-consent-accept');
+  var overlayCount = 0;
 
-    let hasConsent = false;
-    let recognition;
-    let mediaStream;
-    let finalTranscript = '';
-    let currentState = 'idle';
-    const viz = typeof WebAudioViz !== 'undefined' ? new WebAudioViz() : null;
-    const supportsSTT = 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window;
-    const voiceFallback = createFallback();
-    let sessionId = window.localStorage.getItem('silent-session-id');
-    if (!sessionId && window.crypto && window.crypto.randomUUID) {
-      sessionId = crypto.randomUUID();
-      window.localStorage.setItem('silent-session-id', sessionId);
+  function createSessionId() {
+    try {
+      var existing = window.localStorage.getItem(SESSION_KEY);
+      if (existing) return existing;
+      var generated = window.crypto && window.crypto.randomUUID ? window.crypto.randomUUID() : String(Date.now());
+      window.localStorage.setItem(SESSION_KEY, generated);
+      return generated;
+    } catch (error) {
+      return String(Date.now());
     }
+  }
 
-    const voiceConfig = window.SILENT_CONFIG && window.SILENT_CONFIG.voice ? window.SILENT_CONFIG.voice : { provider: 'demo' };
-    const basePath = normalizeBasePath(window.SILENT_CONFIG?.site?.basePath);
-
-    setState('idle');
-
-    if (!supportsSTT && voiceFallback) {
-      voiceFallback.container.hidden = false;
+  function normalizeBasePath(value) {
+    if (typeof value !== 'string' || value.length === 0) {
+      return '.';
     }
+    var sanitized = value.replace(/\/+$/, '');
+    return sanitized.length ? sanitized : '.';
+  }
 
-    if (consentBtn) {
-      consentBtn.addEventListener('click', () => {
-        hasConsent = true;
-        if (consentEl) {
-          consentEl.hidden = true;
-        }
-        orb.focus();
-      });
+  function resolvePath(basePath, target) {
+    if (!target) return target;
+    if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(target) || target.startsWith('//')) {
+      return target;
     }
-
-    orb.addEventListener('click', () => {
-      if (!hasConsent && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        if (consentEl) {
-          consentEl.hidden = false;
-          consentEl.querySelector('button')?.focus();
-        } else {
-          hasConsent = true;
-        }
-        return;
-      }
-      if (currentState === 'idle') {
-        beginListening();
-      } else {
-        cancelInteraction();
-      }
-    });
-
-    orb.addEventListener('keydown', (event) => {
-      if (event.key === ' ' || event.key === 'Enter') {
-        event.preventDefault();
-        orb.click();
-      }
-    });
-
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && currentState !== 'idle') {
-        cancelInteraction();
-      }
-    });
-
-    if (voiceFallback) {
-      voiceFallback.form.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const value = voiceFallback.textarea.value.trim();
-        if (!value) return;
-        appendLog('user', value);
-        voiceFallback.textarea.value = '';
-        setState('thinking');
-        if (transcriptEl) {
-          transcriptEl.textContent = value;
-        }
-        handleResponse(value);
-      });
+    var clean = target.replace(/^\/+/, '');
+    if (basePath === '.' || basePath === '') {
+      return clean.startsWith('./') || clean.startsWith('../') ? clean : './' + clean;
     }
+    return (basePath + '/' + clean).replace(/\/{2,}/g, '/');
+  }
 
-    function beginListening() {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        if (voiceFallback) {
-          voiceFallback.notice.textContent = 'Microphone access is unavailable here. Type your request instead.';
-          voiceFallback.container.hidden = false;
-        }
-        return;
-      }
-      navigator.mediaDevices
-        .getUserMedia({ audio: true })
-        .then((stream) => {
-          mediaStream = stream;
-          if (viz) {
-            viz.setup(stream, (level) => {
-              orb.style.setProperty('--vu-level', level.toFixed(2));
-              const vu = orb.querySelector('.orb-vu');
-              if (vu) {
-                vu.style.setProperty('--vu-level', level.toFixed(2));
+  function buildOverlay(id, stateText) {
+    var container = document.createElement('section');
+    container.className = 'voice-overlay';
+    container.setAttribute('data-state', 'idle');
+    container.setAttribute('role', 'region');
+    container.setAttribute('aria-label', 'Silent voice assistant');
+    container.dataset.stateText = stateText;
+
+    var header = document.createElement('div');
+    header.className = 'voice-overlay__header';
+
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'voice-overlay__button';
+    button.setAttribute('aria-pressed', 'false');
+    button.setAttribute('aria-describedby', id + '-status-text');
+    button.setAttribute('aria-label', 'Press to talk to Silent');
+
+    button.innerHTML = [
+      '<span class="voice-overlay__orb" aria-hidden="true">',
+      '  <span class="voice-overlay__ring voice-overlay__ring--inner"></span>',
+      '  <span class="voice-overlay__ring voice-overlay__ring--middle"></span>',
+      '  <span class="voice-overlay__ring voice-overlay__ring--outer"></span>',
+      '  <span class="voice-overlay__vu"></span>',
+      '</span>',
+      '<span class="voice-overlay__sr">Toggle listening</span>'
+    ].join('');
+
+    var status = document.createElement('p');
+    status.className = 'voice-overlay__status';
+    status.id = id + '-status-text';
+    status.setAttribute('aria-live', 'polite');
+    status.innerHTML = '<strong>Status</strong><span>Ready.</span>';
+
+    header.appendChild(button);
+    header.appendChild(status);
+
+    var transcript = document.createElement('div');
+    transcript.className = 'voice-overlay__transcript';
+    transcript.setAttribute('role', 'status');
+    transcript.setAttribute('aria-live', 'polite');
+    transcript.textContent = 'Press to talk.';
+
+    var log = document.createElement('ul');
+    log.className = 'voice-overlay__log';
+    log.id = id + '-log';
+    log.hidden = true;
+
+    var note = document.createElement('p');
+    note.className = 'voice-overlay__note';
+    note.textContent = stateText || 'Hold to speak, or use the fallback if voice capture is unavailable.';
+
+    var fallback = document.createElement('div');
+    fallback.className = 'voice-overlay__fallback';
+    fallback.hidden = true;
+    fallback.innerHTML = [
+      '<label for="' + id + '-fallback">Speech recognition is unavailable here. Type your request.</label>',
+      '<textarea id="' + id + '-fallback" rows="4" placeholder="Describe what Silent should do"></textarea>',
+      '<button type="button">Send request</button>'
+    ].join('');
+
+    container.appendChild(header);
+    container.appendChild(transcript);
+    container.appendChild(log);
+    container.appendChild(note);
+    container.appendChild(fallback);
+
+    return {
+      container: container,
+      button: button,
+      status: status,
+      transcript: transcript,
+      log: log,
+      note: note,
+      fallback: fallback,
+    };
+  }
+
+  function createLLMAdapter(config, basePath, sessionId) {
+    var provider = (config && config.provider) || 'demo';
+    if (provider === 'openai' || provider === 'gemini') {
+      return {
+        respond: function (text) {
+          return fetch(resolvePath(basePath, 'api/llm'), {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+            },
+            body: JSON.stringify({ messages: [{ role: 'user', content: text }], sessionId: sessionId }),
+          })
+            .then(function (response) {
+              if (!response.ok) {
+                throw new Error('LLM request failed');
               }
+              return response.json();
+            })
+            .then(function (payload) {
+              return payload && payload.text ? payload.text : '';
             });
-          }
-          startRecognition();
-        })
-        .catch((error) => {
-          console.error('Microphone error', error);
-          if (voiceFallback) {
-            voiceFallback.notice.textContent = 'We could not access the microphone. Type your request instead.';
-            voiceFallback.container.hidden = false;
-          }
-        });
+        },
+      };
     }
 
-    function startRecognition() {
-      if (!supportsSTT) {
-        if (voiceFallback) {
-          voiceFallback.notice.textContent = 'Speech recognition is not supported on this browser. Use the text prompt below.';
-          voiceFallback.container.hidden = false;
-        }
-        setState('idle');
+    return {
+      respond: function (text) {
+        var templates = [
+          'Silent has reviewed the signal and proposes the following plan: {plan}.',
+          'Here is the distilled course of action based on your request: {plan}.',
+          'Recommended next step sequence: {plan}.',
+        ];
+        var plans = [
+          'synthesize sources, highlight deltas, and prepare a decision brief',
+          'stage repo-aware changes, validate with tests, and generate reviewer notes',
+          'run policy checks, flag risk, and assemble an oversight packet',
+        ];
+        var reply = templates[Math.floor(Math.random() * templates.length)].replace('{plan}', plans[Math.floor(Math.random() * plans.length)]);
+        return Promise.resolve(reply);
+      },
+    };
+  }
+
+  function speak(text, config) {
+    return new Promise(function (resolve) {
+      if (!('speechSynthesis' in window) || !text) {
+        resolve();
         return;
       }
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      recognition = new SpeechRecognition();
-      recognition.lang = 'en-US';
-      recognition.interimResults = true;
-      recognition.maxAlternatives = 1;
-      recognition.continuous = false;
-
-      recognition.onstart = () => {
-        finalTranscript = '';
-        setState('listening');
-        if (transcriptEl) {
-          transcriptEl.textContent = 'Listening…';
-        }
-      };
-
-      recognition.onresult = (event) => {
-        let interimTranscript = '';
-        for (let i = event.resultIndex; i < event.results.length; i += 1) {
-          const transcript = event.results[i][0].transcript;
-          if (event.results[i].isFinal) {
-            finalTranscript += transcript;
-          } else {
-            interimTranscript += transcript;
-          }
-        }
-        if (transcriptEl) {
-          transcriptEl.textContent = finalTranscript || interimTranscript || 'Listening…';
-        }
-      };
-
-      recognition.onerror = (event) => {
-        console.error('Speech recognition error', event.error);
-        cancelInteraction();
-        if (voiceFallback) {
-          voiceFallback.notice.textContent = 'We could not capture audio. Try again or type your prompt.';
-          voiceFallback.container.hidden = false;
-        }
-      };
-
-      recognition.onend = () => {
-        if (currentState === 'listening') {
-          finalizeTranscript();
-        }
-      };
-
-      recognition.start();
-    }
-
-    function finalizeTranscript() {
-      const text = finalTranscript.trim();
-      if (!text) {
-        setState('idle');
-        if (transcriptEl) {
-          transcriptEl.textContent = 'Ready.';
-        }
-        releaseAudio();
-        return;
-      }
-      appendLog('user', text);
-      setState('thinking');
-      if (transcriptEl) {
-        transcriptEl.textContent = text;
-      }
-      handleResponse(text);
-    }
-
-    function handleResponse(promptText) {
-      const adapter = createLLMAdapter();
-      adapter
-        .respond(promptText)
-        .then((reply) => {
-          if (!reply) {
-            throw new Error('Empty response');
-          }
-          appendLog('assistant', reply);
-          speak(reply).then(() => {
-            setState('idle');
-            if (transcriptEl) {
-              transcriptEl.textContent = 'Ready.';
-            }
-          });
-        })
-        .catch((error) => {
-          console.error('Voice response error', error);
-          setState('idle');
-          if (transcriptEl) {
-            transcriptEl.textContent = 'We could not produce a reply. Try again.';
-          }
-        })
-        .finally(() => {
-          releaseAudio();
+      var utterance = new window.SpeechSynthesisUtterance(text);
+      if (config && config.ttsVoiceName) {
+        var voice = window.speechSynthesis.getVoices().find(function (item) {
+          return item.name === config.ttsVoiceName;
         });
-    }
-
-    function speak(text) {
-      return new Promise((resolve) => {
-        if (!('speechSynthesis' in window)) {
-          resolve();
-          return;
-        }
-        setState('speaking');
-        const utterance = new SpeechSynthesisUtterance(text);
-        if (voiceConfig.ttsVoiceName) {
-          const voice = window.speechSynthesis.getVoices().find((v) => v.name === voiceConfig.ttsVoiceName);
-          if (voice) {
-            utterance.voice = voice;
-          }
-        }
-        utterance.onend = () => {
-          resolve();
-        };
-        utterance.onerror = () => {
-          resolve();
-        };
+        if (voice) utterance.voice = voice;
+      }
+      utterance.onend = resolve;
+      utterance.onerror = resolve;
+      try {
         window.speechSynthesis.cancel();
         window.speechSynthesis.speak(utterance);
-      });
-    }
-
-    function createLLMAdapter() {
-      const provider = (voiceConfig && voiceConfig.provider) || 'demo';
-      if (provider === 'openai' || provider === 'gemini') {
-        return {
-          respond: (text) => {
-            setState('thinking');
-            return fetch(resolveSitePath('api/llm'), {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-              },
-              body: JSON.stringify({ messages: [{ role: 'user', content: text }], sessionId }),
-            })
-              .then((response) => {
-                if (!response.ok) {
-                  throw new Error('LLM request failed');
-                }
-                return response.json();
-              })
-              .then((data) => data.text);
-          },
-        };
+      } catch (error) {
+        resolve();
       }
-      return {
-        respond: (text) =>
-          new Promise((resolve) => {
-            setState('thinking');
-            const templates = [
-              'Silent processed your request and recommends a focused plan: {plan}.',
-              'I traced the relevant signals and here is the distilled insight: {plan}.',
-              'Let me summarize the actionable path forward: {plan}.',
-            ];
-            const plans = [
-              'synthesize the research corpus, highlight deltas, and prepare validation prompts',
-              'stage refactors with test scaffolds, then deliver human-readable diffs',
-              'generate risk annotations, enforce guardrails, and produce oversight snapshots',
-            ];
-            const plan = plans[Math.floor(Math.random() * plans.length)];
-            const template = templates[Math.floor(Math.random() * templates.length)];
-            const reply = template.replace('{plan}', plan);
-            setTimeout(() => resolve(reply), 900 + Math.random() * 600);
-          }),
-      };
+    });
+  }
+
+  function updateStatus(statusEl, label) {
+    var span = statusEl.querySelector('span');
+    if (span) span.textContent = label;
+  }
+
+  function updateVU(container, level) {
+    var vu = container.querySelector('.voice-overlay__vu');
+    if (vu) {
+      var clamped = Math.max(0, Math.min(1, level || 0));
+      vu.style.transform = 'scale(' + (1 + clamped * 0.45).toFixed(3) + ')';
+    }
+  }
+
+  function appendLog(logEl, role, text) {
+    if (!logEl) return;
+    logEl.hidden = false;
+    var entry = document.createElement('li');
+    var label = document.createElement('strong');
+    label.textContent = role === 'user' ? 'You' : 'Silent';
+    var content = document.createElement('span');
+    content.textContent = text;
+    entry.appendChild(label);
+    entry.appendChild(content);
+    logEl.insertBefore(entry, logEl.firstChild);
+    while (logEl.children.length > 4) {
+      logEl.removeChild(logEl.lastChild);
+    }
+  }
+
+  function createFallbackController(elements, onSubmit) {
+    var textarea = elements.fallback.querySelector('textarea');
+    var button = elements.fallback.querySelector('button');
+    if (!textarea || !button) return;
+    button.addEventListener('click', function () {
+      var value = textarea.value.trim();
+      if (!value) return;
+      textarea.value = '';
+      onSubmit(value);
+    });
+  }
+
+  window.initVoiceOverlay = function initVoiceOverlay(anchorEl, config) {
+    if (!anchorEl || anchorEl.dataset.voiceOverlay === 'true') {
+      return null;
     }
 
-    function setState(nextState) {
-      currentState = nextState;
-      orb.classList.toggle('is-listening', nextState === 'listening');
-      orb.classList.toggle('is-thinking', nextState === 'thinking');
-      orb.classList.toggle('is-speaking', nextState === 'speaking');
-      orb.classList.toggle('orb--idle', nextState === 'idle');
-      orb.setAttribute('aria-pressed', nextState !== 'idle' ? 'true' : 'false');
-      statusEls.forEach((el) => {
-        const state = el.getAttribute('data-state');
-        if (state === nextState) {
-          el.hidden = false;
-        } else {
-          el.hidden = true;
+    overlayCount += 1;
+    var overlayId = 'voice-overlay-' + overlayCount;
+    var basePath = normalizeBasePath(window.SILENT_CONFIG && window.SILENT_CONFIG.site && window.SILENT_CONFIG.site.basePath);
+    var settings = Object.assign({}, DEFAULTS, config || {});
+    var sessionId = createSessionId();
+    var elements = buildOverlay(overlayId, settings.note || 'Demo mode uses the browser microphone.');
+    var container = elements.container;
+    var button = elements.button;
+    var transcript = elements.transcript;
+    var status = elements.status;
+    var log = elements.log;
+    var fallback = elements.fallback;
+
+    anchorEl.dataset.voiceOverlay = 'true';
+
+    var anchorRect = anchorEl.getBoundingClientRect();
+    var shouldFloat = anchorRect.width === 0 && anchorRect.height === 0;
+    container.dataset.floating = shouldFloat ? 'true' : 'false';
+
+    if (shouldFloat) {
+      document.body.appendChild(container);
+    } else {
+      var parent = anchorEl.parentElement || document.body;
+      parent.appendChild(container);
+      container.style.position = 'absolute';
+      container.style.left = 'calc(50% - 140px)';
+      container.style.top = 'calc(100% + 1.25rem)';
+    }
+
+    var state = 'idle';
+    var recognition = null;
+    var mediaStream = null;
+    var isListening = false;
+    var supportsSTT = 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window;
+    var viz = typeof window.WebAudioViz === 'function' ? new window.WebAudioViz() : null;
+
+    if (!supportsSTT) {
+      fallback.hidden = false;
+      elements.note.textContent = 'Speech recognition is not supported here — use the text input below.';
+    }
+
+    function setState(next) {
+      state = next;
+      container.setAttribute('data-state', next);
+      button.setAttribute('aria-pressed', next !== 'idle' ? 'true' : 'false');
+      switch (next) {
+        case 'idle':
+          updateStatus(status, 'Ready.');
+          break;
+        case 'listening':
+          updateStatus(status, 'Listening…');
+          break;
+        case 'thinking':
+          updateStatus(status, 'Processing…');
+          break;
+        case 'speaking':
+          updateStatus(status, 'Speaking…');
+          break;
+        default:
+          updateStatus(status, 'Ready.');
+      }
+    }
+
+    function stopAudio() {
+      if (viz) {
+        try {
+          viz.cleanup();
+        } catch (error) {
+          console.warn('Voice viz cleanup failed', error);
         }
-      });
-    }
-
-    function appendLog(role, text) {
-      if (!logEl) return;
-      logEl.hidden = false;
-      const entry = document.createElement('p');
-      entry.textContent = `${role === 'user' ? 'You' : 'Silent'}: ${text}`;
-      logEl.prepend(entry);
-      while (logEl.children.length > 5) {
-        logEl.removeChild(logEl.lastChild);
+      }
+      if (mediaStream) {
+        try {
+          mediaStream.getTracks().forEach(function (track) {
+            track.stop();
+          });
+        } catch (error) {
+          console.warn('Stream stop failed', error);
+        }
+        mediaStream = null;
       }
     }
 
@@ -330,70 +324,185 @@
         try {
           recognition.stop();
         } catch (error) {
-          console.warn('Recognition stop error', error);
+          console.warn('recognition.stop()', error);
         }
         recognition = null;
       }
       if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
+        try {
+          window.speechSynthesis.cancel();
+        } catch (error) {
+          console.warn('speechSynthesis.cancel()', error);
+        }
       }
-      releaseAudio();
-      if (transcriptEl) {
-        transcriptEl.textContent = 'Ready.';
-      }
+      stopAudio();
       setState('idle');
+      transcript.textContent = 'Press to talk.';
+      isListening = false;
     }
 
-    function releaseAudio() {
-      if (viz) {
-        viz.cleanup();
+    function handleTranscript(text) {
+      appendLog(log, 'user', text);
+      transcript.textContent = text;
+      setState('thinking');
+      var adapter = createLLMAdapter(settings, basePath, sessionId);
+      return adapter
+        .respond(text)
+        .then(function (reply) {
+          if (!reply) {
+            throw new Error('Empty response');
+          }
+          appendLog(log, 'assistant', reply);
+          transcript.textContent = reply;
+          setState('speaking');
+          return speak(reply, settings).finally(function () {
+            setState('idle');
+          });
+        })
+        .catch(function (error) {
+          console.error('Voice overlay error', error);
+          setState('idle');
+          transcript.textContent = 'We could not produce a reply. Try again shortly.';
+        });
+    }
+
+    function beginListening() {
+      if (!supportsSTT) {
+        fallback.hidden = false;
+        return;
       }
-      if (mediaStream) {
-        mediaStream.getTracks().forEach((track) => track.stop());
-        mediaStream = null;
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        fallback.hidden = false;
+        elements.note.textContent = 'Microphone access is unavailable. Use the text prompt instead.';
+        return;
+      }
+      navigator.mediaDevices
+        .getUserMedia({ audio: true })
+        .then(function (stream) {
+          mediaStream = stream;
+          if (viz && typeof viz.setup === 'function') {
+            viz.setup(stream, function (level) {
+              updateVU(container, level);
+            });
+          }
+          startRecognition();
+        })
+        .catch(function (error) {
+          console.error('Microphone error', error);
+          fallback.hidden = false;
+          elements.note.textContent = 'We could not access the microphone. Use the text prompt below.';
+        });
+    }
+
+    function startRecognition() {
+      var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        fallback.hidden = false;
+        return;
+      }
+      recognition = new SpeechRecognition();
+      recognition.lang = 'en-US';
+      recognition.maxAlternatives = 1;
+      recognition.continuous = false;
+      recognition.interimResults = true;
+
+      var finalTranscript = '';
+      transcript.textContent = 'Listening…';
+      setState('listening');
+      isListening = true;
+
+      recognition.onresult = function (event) {
+        var interim = '';
+        for (var i = event.resultIndex; i < event.results.length; i += 1) {
+          var item = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalTranscript += item;
+          } else {
+            interim += item;
+          }
+        }
+        transcript.textContent = finalTranscript || interim || 'Listening…';
+      };
+
+      recognition.onerror = function (event) {
+        console.error('Speech recognition error', event.error);
+        cancelInteraction();
+        fallback.hidden = false;
+        elements.note.textContent = 'We could not capture audio. Try again or use the text input.';
+      };
+
+      recognition.onend = function () {
+        if (!isListening) {
+          return;
+        }
+        isListening = false;
+        stopAudio();
+        var text = finalTranscript.trim();
+        if (!text) {
+          setState('idle');
+          transcript.textContent = 'Ready.';
+          return;
+        }
+        handleTranscript(text);
+      };
+
+      try {
+        recognition.start();
+      } catch (error) {
+        console.error('recognition.start()', error);
+        cancelInteraction();
+        fallback.hidden = false;
       }
     }
 
-    function normalizeBasePath(value) {
-      if (typeof value !== 'string' || value.length === 0) {
-        return '.';
+    button.addEventListener('click', function () {
+      if (state === 'idle') {
+        beginListening();
+      } else {
+        cancelInteraction();
       }
-      const sanitized = value.replace(/\/+$/, '');
-      return sanitized.length ? sanitized : '.';
-    }
+    });
 
-    function resolveSitePath(target) {
-      if (!target) return target;
-      if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(target) || target.startsWith('//')) {
-        return target;
+    button.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        button.click();
       }
-      const cleanTarget = target.replace(/^\/+/, '');
-      if (basePath === '.' || basePath === '') {
-        return cleanTarget.startsWith('./') || cleanTarget.startsWith('../')
-          ? cleanTarget
-          : `./${cleanTarget}`;
-      }
-      return `${basePath}/${cleanTarget}`.replace(/\/{2,}/g, '/');
-    }
+    });
 
-    function createFallback() {
-      const wrapper = document.createElement('div');
-      wrapper.className = 'voice-text-fallback';
-      wrapper.hidden = true;
-      wrapper.innerHTML = `
-        <p class="notice" role="status">Public demo coming soon — request access for the full voice interface.</p>
-        <form>
-          <label for="voice-textarea">Type to ask Silent</label>
-          <textarea id="voice-textarea" name="voice-textarea" rows="4" placeholder="Describe what you need" aria-describedby="voice-text-notice"></textarea>
-          <button class="btn btn-secondary" type="submit">Send prompt</button>
-        </form>
-      `;
-      const notice = wrapper.querySelector('.notice');
-      notice.id = 'voice-text-notice';
-      const form = wrapper.querySelector('form');
-      const textarea = wrapper.querySelector('textarea');
-      orb.insertAdjacentElement('afterend', wrapper);
-      return { container: wrapper, form, textarea, notice };
-    }
-  });
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && state !== 'idle') {
+        cancelInteraction();
+      }
+    });
+
+    createFallbackController(elements, function (text) {
+      appendLog(log, 'user', text);
+      transcript.textContent = text;
+      setState('thinking');
+      createLLMAdapter(settings, basePath, sessionId)
+        .respond(text)
+        .then(function (reply) {
+          appendLog(log, 'assistant', reply);
+          transcript.textContent = reply;
+        })
+        .catch(function (error) {
+          console.error('Fallback voice overlay error', error);
+          transcript.textContent = 'We could not produce a reply right now.';
+        })
+        .finally(function () {
+          setState('idle');
+        });
+    });
+
+    return {
+      element: container,
+      destroy: function () {
+        cancelInteraction();
+        if (container.parentElement) {
+          container.parentElement.removeChild(container);
+        }
+      },
+    };
+  };
 })();

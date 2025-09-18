@@ -1,8 +1,8 @@
 export default {
   async fetch(request, env) {
-    const origin = request.headers.get('Origin') || '*';
+    const allowedOrigin = 'https://rheashopp.github.io';
     const corsHeaders = {
-      'Access-Control-Allow-Origin': origin,
+      'Access-Control-Allow-Origin': allowedOrigin,
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Accept, X-Requested-With',
       Vary: 'Origin',
