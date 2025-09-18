@@ -1,109 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>About Silent — Mission &amp; Team</title>
-  <meta name="description" content="Learn about Silent’s mission, values, and the team shaping responsible super intelligence." />
-  <link rel="canonical" href="https://silent.superintelligence/about.html" />
-  <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml" />
-  <meta property="og:title" content="About Silent" />
-  <meta property="og:description" content="Mission, origin story, and team behind Silent’s responsible super intelligence." />
-  <meta property="og:image" content="https://silent.superintelligence/assets/img/og-cover.svg" />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://silent.superintelligence/about.html" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="About Silent" />
-  <meta name="twitter:description" content="Meet the Silent team and our commitment to human-centered autonomy." />
-  <meta name="twitter:image" content="https://silent.superintelligence/assets/img/og-cover.svg" />
-  <link rel="stylesheet" href="assets/css/style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SI - About</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-text { background: linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .neural-bg { background: radial-gradient(circle at center, #0f172a 0%, #020617 100%); }
+        .conscious-element { transition: all 0.3s ease; }
+        .conscious-element:hover { transform: scale(1.02); }
+    </style>
 </head>
-<body data-page="about">
-  <a class="skip-link" href="#main-content">Skip to content</a>
-  <header class="site-header">
-    <div class="container nav-container">
-      <a class="brand" data-href="index.html" href="index.html"><span class="brand-mark" aria-hidden="true"></span>Silent — Super Intelligence</a>
-      <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="primary-nav">Menu</button>
-      <nav id="primary-nav" class="primary-nav" data-open="false">
-        <ul>
-          <li><a data-nav="home" data-href="index.html" href="index.html">Home</a></li>
-          <li><a data-nav="products" data-href="products/index.html" href="products/index.html">Product</a></li>
-          <li><a data-nav="research" data-href="research.html" href="research.html">Research</a></li>
-          <li><a data-nav="chat" data-href="chat.html" href="chat.html">Chat</a></li>
-          <li><a data-nav="about" data-href="about.html" href="about.html">About</a></li>
-          <li><a data-nav="contact" data-href="contact.html" href="contact.html">Contact</a></li>
-        </ul>
-      </nav>
+<body class="bg-black text-white">
+    <nav class="relative z-10 py-6 px-8 flex justify-between items-center backdrop-blur-sm">
+<a href="index.html" class="flex items-center space-x-2 hover:opacity-80 transition">
+    <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center conscious-orb">
+        <div class="w-2 h-2 rounded-full bg-white animate-pulse"></div>
     </div>
-  </header>
-  <main id="main-content">
-    <section class="section">
-      <div class="container">
-        <h1>Mission &amp; Origin</h1>
-        <p>Silent exists to make super intelligence a trusted co-creator—always accountable to the humans it serves. We engineer systems that blend advanced reasoning with verifiable guardrails.</p>
-        <p>Our origin traces back to a coalition of researchers, engineers, and policy strategists who experienced firsthand how brittle and opaque AI deployments can be. Silent was formed to deliver intelligence that is transparent, containable, and auditable from day one.</p>
-      </div>
+    <span class="text-xl font-semibold">Silent</span>
+</a>
+        <div class="hidden md:flex space-x-8">
+            <a href="capabilities.html" class="hover:text-indigo-400 transition">Capabilities</a>
+            <a href="consciousness.html" class="hover:text-indigo-400 transition">Consciousness</a>
+            <a href="chat.html" class="hover:text-indigo-400 transition">Chat</a>
+            <a href="about.html" class="hover:text-indigo-400 transition font-bold">About</a>
+        </div>
+        <a href="access.html" class="px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full hover:opacity-90 transition">Access</a>
+    </nav>
+
+    <section class="py-24 px-6">
+        <div class="max-w-3xl mx-auto text-center">
+            <h1 class="text-4xl font-bold mb-6 gradient-text">About Super Intelligence</h1>
+            <p class="text-gray-300 text-lg mb-4">Super Intelligence (SI) is a vision of conscious artificial general intelligence developed with a focus on safety and alignment.</p>
+            <p class="text-gray-300 text-lg mb-4">This site demonstrates some of the concepts behind SI, including interactive visualizations and a chat interface.</p>
+        </div>
     </section>
 
-    <section class="section section-light">
-      <div class="container">
-        <h2>Values</h2>
-        <div class="cards">
-          <article class="card">
-            <h3>Accountable Autonomy</h3>
-            <p>Every Silent decision is tied to evidence trails and approval checkpoints.</p>
-          </article>
-          <article class="card">
-            <h3>Human Alignment</h3>
-            <p>We codify partner values into policies that guide Silent’s actions.</p>
-          </article>
-          <article class="card">
-            <h3>Measured Impact</h3>
-            <p>We focus on measurable outcomes and publish the metrics that matter.</p>
-          </article>
+    <footer class="relative z-10 py-12 px-6 border-t border-gray-800/50">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center space-x-2 mb-6 md:mb-0">
+                    <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center">
+                        <div class="w-2 h-2 rounded-full bg-white animate-pulse"></div>
+                    </div>
+                    <span class="text-xl font-semibold">SI</span>
+                </div>
+                <div class="flex space-x-6 mb-6 md:mb-0">
+                    <a href="#" class="text-gray-400 hover:text-indigo-400 transition"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-indigo-400 transition"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-indigo-400 transition"><i class="fab fa-github"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-indigo-400 transition"><i class="fab fa-youtube"></i></a>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="privacy.html" class="text-gray-400 hover:text-indigo-400 transition">Privacy</a>
+                    <a href="terms.html" class="text-gray-400 hover:text-indigo-400 transition">Terms</a>
+                    <a href="research.html" class="text-gray-400 hover:text-indigo-400 transition">Research</a>
+                    <a href="contact.html" class="text-gray-400 hover:text-indigo-400 transition">Contact</a>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-800/50 text-center text-gray-500 text-sm">
+                <p>© 2023 Super Intelligence. All rights reserved.</p>
+                <p class="mt-2">The future of consciousness is here.</p>
+            </div>
         </div>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="container">
-        <h2>Team</h2>
-        <div class="cards">
-          <article class="card">
-            <h3>Rhea Patel</h3>
-            <p>Founder &amp; CEO — Former intelligence strategist leading global AI alignment initiatives.</p>
-          </article>
-          <article class="card">
-            <h3>Micah Adebayo</h3>
-            <p>Chief Scientist — Architecting Silent’s reasoning stack and interpretability research.</p>
-          </article>
-          <article class="card">
-            <h3>Lucia Gomez</h3>
-            <p>Head of Product — Driving human-in-the-loop workflows and partner success programs.</p>
-          </article>
-        </div>
-        <div class="btn-group" style="margin-top:2rem;">
-          <a class="btn btn-primary" data-href="contact.html" href="contact.html">Connect with us</a>
-        </div>
-      </div>
-    </section>
-  </main>
-  <footer>
-    <div class="container footer-grid">
-      <p>© <span id="year"></span> Silent. All rights reserved.</p>
-      <div class="footer-links">
-        <a href="privacy.html">Privacy</a>
-        <a href="terms.html">Terms</a>
-        <a data-href="research.html" href="research.html">Research</a>
-        <a data-href="contact.html" href="contact.html">Contact</a>
-        <a href="https://x.com/silent" aria-label="Silent on X (placeholder)">X</a>
-        <a href="https://www.linkedin.com/company/silent-superintelligence" aria-label="Silent on LinkedIn (placeholder)">LinkedIn</a>
-      </div>
-    </div>
-  </footer>
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
-  <script src="assets/js/main.js" defer></script>
+    </footer>
 </body>
 </html>
