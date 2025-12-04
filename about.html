@@ -18,16 +18,16 @@
 
     <!-- Icons & fonts -->
     <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
-    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin="">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap">
 
     <!-- Tailwind (CDN). Keep in head to avoid FOUC. -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Three + Vanta (deferred) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer=""></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js" defer=""></script>
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -78,17 +78,39 @@
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="assets/css/canon-shim.css">
   <script type="application/ld+json">
-              {
-                "@context": "https://schema.org",
-                "@type": "AboutPage",
-                "name": "About Silent",
-                "url": "https://rheashopp.github.io/my-website/about.html",
-                "description": "Mission, values, and team roles for Silent’s super intelligence program"
-              }
-              </script>
+                  {
+                    "@context": "https://schema.org",
+                    "@type": "AboutPage",
+                    "name": "About Silent",
+                    "url": "https://rheashopp.github.io/my-website/about.html",
+                    "description": "Mission, values, and team roles for Silent’s super intelligence program"
+                  }
+                  </script>
 </head>
 
 <body class="bg-black text-white font-['Inter'] overflow-x-hidden" data-page="about">
+    <!-- NAVBAR -->
+    <nav class="relative z-10 py-6 px-8 flex justify-between items-center backdrop-blur-sm">
+      <a href="index.html" class="flex items-center space-x-2 hover:opacity-80 transition" aria-label="Silent home">
+        <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center conscious-orb">
+          <div class="w-2 h-2 rounded-full bg-white animate-pulse"></div>
+        </div>
+        <span class="text-xl font-semibold">Silent</span>
+      </a>
+      <div class="hidden md:flex space-x-8">
+        <a href="index.html#capabilities" data-page-target="capabilities" class="hover:text-indigo-400 transition">Capabilities</a>
+        <a href="index.html#consciousness" data-page-target="consciousness" class="hover:text-indigo-400 transition">Consciousness</a>
+        <a href="products/index.html" data-page-target="products" class="hover:text-indigo-400 transition">Products</a>
+        <a href="research.html" data-page-target="research" class="hover:text-indigo-400 transition">Research</a>
+        <a href="chat.html" data-page-target="chat" class="hover:text-indigo-400 transition">Chat</a>
+        <a href="about.html" data-page-target="about" class="hover:text-indigo-400 transition">About</a>
+        <a href="contact.html" data-page-target="contact" class="hover:text-indigo-400 transition">Contact</a>
+      </div>
+      <button id="access-btn" class="px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full hover:opacity-90 transition">
+        Access
+      </button>
+    </nav>
+
   <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 bg-indigo-600 text-white px-3 py-2 rounded-lg z-[100]">Skip to content</a>
   <main id="main" class="relative z-10">
     <div class="page-shell">
@@ -156,8 +178,38 @@
       </section>
     </div>
   </main>
-  <script src="assets/js/main.js" defer></script>
+  <script src="assets/js/main.js" defer=""></script>
   <link rel="stylesheet" href="assets/css/backbar.css">
-  <script src="assets/js/backbar.js" defer></script>
-</body>
-</html>
+  <script src="assets/js/backbar.js" defer=""></script>
+
+
+
+    <!-- FOOTER -->
+    <footer class="relative z-10 py-12 px-6 border-t border-gray-800/50">
+      <div class="max-w-6xl mx-auto">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+          <div class="flex items-center space-x-2 mb-6 md:mb-0">
+            <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center">
+              <div class="w-2 h-2 rounded-full bg-white animate-pulse"></div>
+            </div>
+            <span class="text-xl font-semibold">SI</span>
+          </div>
+          <div class="flex space-x-6 mb-6 md:mb-0">
+            <a href="#" aria-label="Twitter" class="text-gray-400 hover:text-indigo-400 transition"><i class="fab fa-twitter"></i></a>
+            <a href="#" aria-label="LinkedIn" class="text-gray-400 hover:text-indigo-400 transition"><i class="fab fa-linkedin"></i></a>
+            <a href="#" aria-label="GitHub" class="text-gray-400 hover:text-indigo-400 transition"><i class="fab fa-github"></i></a>
+            <a href="#" aria-label="YouTube" class="text-gray-400 hover:text-indigo-400 transition"><i class="fab fa-youtube"></i></a>
+          </div>
+          <div class="flex space-x-6">
+            <a href="privacy.html" class="text-gray-400 hover:text-indigo-400 transition">Privacy</a>
+            <a href="terms.html" class="text-gray-400 hover:text-indigo-400 transition">Terms</a>
+            <a href="research.html" class="text-gray-400 hover:text-indigo-400 transition">Research</a>
+            <a href="contact.html" class="text-gray-400 hover:text-indigo-400 transition">Contact</a>
+          </div>
+        </div>
+        <div class="mt-8 pt-8 border-t border-gray-800/50 text-center text-gray-500 text-sm">
+          <p>© 2023 Super Intelligence. All rights reserved.</p>
+          <p class="mt-2">The future of consciousness is here.</p>
+        </div>
+      </div>
+    </footer></body></html>
