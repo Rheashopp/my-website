@@ -71,7 +71,8 @@ export const HEAD_CANON = `<!-- Core metadata -->
     #conscious-orb-container { animation: orb-breathe 5s ease-in-out infinite, orb-glow 3s ease-in-out infinite; transition: box-shadow .4s, filter .4s; }
     #conscious-orb-container:hover { animation: orb-breathe 2.5s ease-in-out infinite, orb-glow 1.5s ease-in-out infinite; filter: drop-shadow(0 0 40px #a21cafee) brightness(1.12); }
   </style>`;
-export const HEADER_HTML = `<nav class="relative z-10 py-6 px-8 flex justify-between items-center backdrop-blur-sm">
+export const HEADER_HTML = `<!-- NAVBAR -->
+  <nav class="relative z-10 py-6 px-8 flex justify-between items-center backdrop-blur-sm">
     <a href="index.html" class="flex items-center space-x-2 hover:opacity-80 transition" aria-label="Silent home">
       <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center conscious-orb">
         <div class="w-2 h-2 rounded-full bg-white animate-pulse"></div>
@@ -91,7 +92,8 @@ export const HEADER_HTML = `<nav class="relative z-10 py-6 px-8 flex justify-bet
       Access
     </button>
   </nav>`;
-export const FOOTER_HTML = `<footer class="relative z-10 py-12 px-6 border-t border-gray-800/50">
+export const FOOTER_HTML = `<!-- FOOTER -->
+  <footer class="relative z-10 py-12 px-6 border-t border-gray-800/50">
     <div class="max-w-6xl mx-auto">
       <div class="flex flex-col md:flex-row justify-between items-center">
         <div class="flex items-center space-x-2 mb-6 md:mb-0">

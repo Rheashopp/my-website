@@ -30,11 +30,14 @@ function readIndexCanon() {
   let headInner = headMatch[1];
   headInner = headInner.replace(/\s*<title>[\s\S]*?<\/title>/i, '');
   headInner = headInner.replace(/\s*<meta[^>]*name\s*=\s*"description"[^>]*>/i, '');
-  const navMatch = html.match(/<nav[\s\S]*?<\/nav>/i);
+  const navMatch =
+    html.match(/<!--\s*NAVBAR\s*-->\s*<nav[\s\S]*?<\/nav>/i) || html.match(/<nav[\s\S]*?<\/nav>/i);
   if (!navMatch) {
     throw new Error('Unable to locate header <nav> in index.html');
   }
-  const footerMatch = html.match(/<footer[\s\S]*?<\/footer>/i);
+  const footerMatch =
+    html.match(/<!--\s*FOOTER\s*-->\s*<footer[\s\S]*?<\/footer>/i) ||
+    html.match(/<footer[\s\S]*?<\/footer>/i);
   if (!footerMatch) {
     throw new Error('Unable to locate footer in index.html');
   }
@@ -44,8 +47,10 @@ function readIndexCanon() {
   }
   return {
     headCanon: headInner.trim(),
-    headerHtml: navMatch[0].trim(),
-    footerHtml: footerMatch[0].trim(),
+    headerHtml: navMatch[0].includes('<!-- NAVBAR -->') ? navMatch[0].trim() : `<!-- NAVBAR -->\n${navMatch[0].trim()}`,
+    footerHtml: footerMatch[0].includes('<!-- FOOTER -->')
+      ? footerMatch[0].trim()
+      : `<!-- FOOTER -->\n${footerMatch[0].trim()}`,
     bodyClass: bodyMatch[1].trim(),
   };
 }
